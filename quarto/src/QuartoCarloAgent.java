@@ -36,55 +36,21 @@ public class QuartoCarloAgent extends QuartoAgent {
 	 * This code will try to find a piece that the other player can't use to win immediately
 	 */
     @Override
-    protected String pieceSelectionAlgorithm() {
-        //some useful lines:
-        //String BinaryString = String.format("%5s", Integer.toBinaryString(pieceID)).replace(' ', '0');
-
-        this.startTimer();
-        boolean skip = false;
-        for (int i = 0; i < this.quartoBoard.getNumberOfPieces(); i++) {
-            skip = false;
-            if (!this.quartoBoard.isPieceOnBoard(i)) {
-                for (int row = 0; row < this.quartoBoard.getNumberOfRows(); row++) {
-                    for (int col = 0; col < this.quartoBoard.getNumberOfColumns(); col++) {
-                        if (!this.quartoBoard.isSpaceTaken(row, col)) {
-                            QuartoBoard copyBoard = new QuartoBoard(this.quartoBoard);
-                            copyBoard.insertPieceOnBoard(row, col, i);
-                            if (copyBoard.checkRow(row) || copyBoard.checkColumn(col) || copyBoard.checkDiagonals()) {
-                                skip = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (skip) {
-                        break;
-                    }
-
-                }
-                if (!skip) {
-                    return String.format("%5s", Integer.toBinaryString(i)).replace(' ', '0');
-                }
-
-            }
-            if (this.getMillisecondsFromTimer() > (this.timeLimitForResponse - COMMUNICATION_DELAY)) {
-                //handle for when we are over some imposed time limit (make sure you account for communication delay)
-            }
-            String message = null;
-            //for every other i, check if there is a missed message
-            /*
-            if (i % 2 == 0 && ((message = this.checkForMissedServerMessages()) != null)) {
-                //the oldest missed message is stored in the variable message.
-                //You can see if any more missed messages are in the socket by running this.checkForMissedServerMessages() again
-            }
-            */
-        }
-
-
-        //if we don't find a piece in the above code just grab the first random piece
-        int pieceId = this.quartoBoard.chooseRandomPieceNotPlayed(100);
-        String BinaryString = String.format("%5s", Integer.toBinaryString(pieceId)).replace(' ', '0');
-
-
+    protected String pieceSelectionAlgorithm() {		
+		MonteCarlo mc = new MonteCarlo(new QuartoBoard(this.quartoBoard));
+		
+	    int[] pieces = mc.getPossiblePieces();
+	    
+		mc.runSimulation(800, pieces);	
+		
+    	int max = 0;
+    	for(int i = 1; i < mc.simulations.size(); i++) {
+    		double maxProb = mc.wins.get(""+max) / mc.simulations.get(""+max);
+    		double prob = mc.wins.get(""+i) / mc.simulations.get(""+i);
+    		if (maxProb < prob) max = i;
+    	}
+    	
+    	String BinaryString = String.format("%5s", Integer.toBinaryString(max)).replace(' ', '0');
         return BinaryString;
     }
 
@@ -94,27 +60,22 @@ public class QuartoCarloAgent extends QuartoAgent {
      */
     @Override
     protected String moveSelectionAlgorithm(int pieceID) {
+    	MonteCarlo mc = new MonteCarlo(new QuartoBoard(this.quartoBoard));
+    	
+    	int[][] moves = mc.getPossibleMoves();
+    	
+    	mc.runSimulation(800, moves, 0);	
+		
+    	int max = 0;
+    	for (int i = 1; i < moves.length; i++) {
+    		String maxMove = moves[max][0] + ":" + moves[max][1];
+    		String move = moves[i][0] + ":" + moves[i][1];
+    		double maxProb = mc.wins.get(maxMove) / mc.simulations.get(maxMove);
+    		double prob = mc.wins.get(move) / mc.simulations.get(move);
+    		if (maxProb < prob) max = i;
+    	}
 
-        //If there is a winning move, take it
-
-		for (int row = 0; row < this.quartoBoard.getNumberOfRows(); row++) {
-            for (int col = 0; col < this.quartoBoard.getNumberOfColumns(); col++) {
-                if (!this.quartoBoard.isSpaceTaken(row, col)) {
-                    QuartoBoard copyBoard = new QuartoBoard(this.quartoBoard);
-                    copyBoard.insertPieceOnBoard(row, col, pieceID);
-                    if (copyBoard.checkRow(row) || copyBoard.checkColumn(col) || copyBoard.checkDiagonals()) {
-                    	return row + "," + col;
-                    }
-                }
-            }
-        }
-
-        // If no winning move is found in the above code, then return a random (unoccupied) square
-        int[] move = new int[2];
-        QuartoBoard copyBoard = new QuartoBoard(this.quartoBoard);
-        move = copyBoard.chooseRandomPositionNotPlayed(100);
-
-        return move[0] + "," + move[1];
+    	return moves[max][0] + "," + moves[max][1];
     }
 
 
