@@ -1,275 +1,367 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/*
+ * The UCT algorithm from http://mcts.ai/pubs/mcts-survey-master.pdf
+ */
+		
 public class MonteCarlo {
 
-	private QuartoBoard board;
-	public HashMap<String, Double> wins;
-	public HashMap<String, Integer> simulations;
-	
-	public MonteCarlo(QuartoBoard board) {
-		this.board = board;
-		this.wins = new HashMap<String, Double>();
-		this.simulations = new HashMap<String, Integer>();
-		//chooseRandomPieceNotPlayed
-	}
-	
-	private int playGame(int startingPiece) {
-		
-		QuartoBoard copyBoard = new QuartoBoard(this.board);
-		
-		int piece = startingPiece;
-		
-		Boolean player1 = true;
-		
-		while (true) {
-		
-			//int[] move = randomMove(piece, copyBoard);
-			int[] move = semiRandomMove(piece, copyBoard);
-			
-			copyBoard.insertPieceOnBoard(move[0], move[1], piece);
-			
-			if (isWin(copyBoard, move[0], move[1])) {
-				if (player1) return 1;
-				return 0;
-			}
-			
-			if (copyBoard.checkIfBoardIsFull()) return 0;
-			
-			
-			//piece = randomPieceSelection(copyBoard);
-			piece = semiRandomPieceSelection(copyBoard);
-			
-			// Switch payers
-			player1 = !player1;
-		}
-	}
-	
-	private int playGame(int[] startingMove, int startingPiece) {
-		
-		QuartoBoard copyBoard = new QuartoBoard(board);
-		
-		int piece = startingPiece;
-		int[] move = startingMove;
-		
-		Boolean player1 = false;
-		
-		while (true) {
-		
-			//int[] move = randomMove(piece, copyBoard);
-			if (move == null) move = semiRandomMove(piece, copyBoard);
-			
-			copyBoard.insertPieceOnBoard(move[0], move[1], piece);
-			
-			if (isWin(copyBoard, move[0], move[1])) {
-				if (player1) return 1;
-				return 0;
-			}
-			
-			if (copyBoard.checkIfBoardIsFull()) return 0;
+	private int timeLimit;
+	private double cp;
 
-			//piece = randomPieceSelection(copyBoard);
-			piece = semiRandomPieceSelection(copyBoard);
+	public MonteCarlo(int timeLimit, double cp) {
+		this.timeLimit = timeLimit;
+		this.cp = cp;
+	}
+
+	/*
+	 * function UctSearch(s0)
+	 * 		create root node v0 with state s0
+	 * 		while within computational budget do
+	 * 			v1 <= TreePolicy(v0)
+	 * 			delta <= DefaultPolicy(s(v1))
+	 * 			Backup(v1, delta)
+	 * 		return action(BestChild(v0,0))
+	 */
+	public String UCTSearch(QuartoBoard board, Integer piece) {
+		// create root node v0 with state s0
+		Node root;
+		if (piece == null) {
+			root = new SelectPieceNode(board);
+		} else {
+			root = new SelectMoveNode(board);
+			((SelectMoveNode) root).setAction(piece);
+		}
+
+		long startTime = System.currentTimeMillis();
+		long endTime = startTime + (this.timeLimit);
+		while (System.currentTimeMillis() < endTime) {
+			// v1 <= TreePolicy(v0)
+			Node child = treePolicy(root);
 			
-			// Switch payers
-			player1 = !player1;
-			move = null;
+			// delta <= DefaultPolicy(s(v1))
+			int score;
+			if (child instanceof SelectMoveNode) {
+				piece = parsePiece(child.getAction());
+				score = defaultPolicy(board, piece, child.player);
+			} else {
+				int[] move = parseMove(child.getAction());
+				QuartoBoard copyBoard = new QuartoBoard(board);
+				copyBoard.insertPieceOnBoard(move[0], move[1], piece);
+				score = defaultPolicy(copyBoard, null, child.player);
+			}
+			
+			//Backup(v1, delta)
+			backup(child, score);
+		}
+
+		// return action(BestChild(v0,0))
+		printTree("Root", root);
+		
+		return bestChild(root, 0).getAction();
+	}
+	
+	/*
+	 *  function TreePolicy(v)
+	 *  	while v is nonterminal do
+	 *  		if v not fully expanded then
+	 *  			return Expand(v)
+	 *  		else
+	 *  			v <= BestChild(v, Cp)
+	 *  	return v
+	 *  
+	 *  Cp is the exploration term and the constant can be
+	 *  	adjusted to lower or increase the amount of 
+	 *  	exploration performed
+	 *  
+	 *  Cp =  1 / Math.sqrt(2) is mentioned in the paper
+	 *  
+	 */
+	private Node treePolicy(Node node) {
+		if (node instanceof TerminatingNode)
+			return node;
+		if (node.getRemainingMoves().size() != 0)
+			return expand(node);
+		return bestChild(node, this.cp);
+	}
+
+	/*
+	 *  function Expand(v)
+	 *  	choose action from untried actions for the node v
+	 *  	add a new child v' to v
+	 *  		with s(v') = Result(s(v),action)
+	 *  		and action(v') = action 
+	 *  	return v'
+	 */
+	private Node expand(Node node) {
+		Node child;
+		
+		String action = node.getRemainingMoves().get(0);
+		if (node instanceof SelectPieceNode) {
+			child = new SelectMoveNode(node.getBoard());
+		} else {
+			QuartoBoard copyBoard = new QuartoBoard(node.getBoard());
+			int piece = parsePiece(node.getAction());
+			int[] move = parseMove(action);
+			copyBoard.insertPieceOnBoard(move[0], move[1], piece);
+			
+			if (isWin(copyBoard, move[0], move[1])) {
+				if (node.player)
+					child = new TerminatingNode(copyBoard, 1);
+				child = new TerminatingNode(copyBoard, 0);
+			} else if (copyBoard.checkIfBoardIsFull()) {
+				child = new TerminatingNode(copyBoard, 0);
+			} else {
+				child = new SelectPieceNode(copyBoard);
+			}
+		}
+		node.addChild(child, action);
+		return child;
+	}
+	
+	/*
+	 *  function BestChild(v, delta)
+	 *  	return argmax of c in children of v: evaluate(c, delta)
+	 */
+	private Node bestChild(Node node, double delta) {
+		return argmax(node, delta);
+	}
+		
+	private Node argmax(Node node, double delta) {
+		ArrayList<Node> children = node.getChildren();
+		
+		double maxValue = evaluate(children.get(0), delta);
+		Node maxNode = children.get(0);
+		
+		for (int i = 1; i < children.size() ; i++) {
+			Node child = children.get(i);
+			
+			double value = evaluate(child, delta);
+			
+			if (value > maxValue) {
+				maxValue = value;
+				maxNode = child;
+			}
+		}
+		return maxNode;
+	}
+	
+	private void printTree(String name, Node node) {
+		System.out.println(name+ ": Q-"+node.getQ()+", N-"+node.getN());
+		ArrayList<Node> children = node.getChildren();
+		for (int i = 1; i < children.size() ; i++) {
+			printTree("\t"+children.get(i).getAction(), children.get(i));
+		}
+		if ("Root" == name) {
+			System.out.println("Best Action: " + bestChild(node, 0).getAction());
 		}
 	}
 	
-	public void runSimulation(int timeLimit, int[] pieces) {
-		long startTime = System.currentTimeMillis();
-		long endTime = startTime+(timeLimit);
-		while(System.currentTimeMillis()<endTime){
-			for (int idx = 0; idx < pieces.length ; idx++) {	
-				this.wins.put(""+pieces[idx], this.wins.getOrDefault(""+pieces[idx], 0.0) + playGame(pieces[idx]));
-				this.simulations.put(""+pieces[idx], this.simulations.getOrDefault(""+pieces[idx], 0) + 1);
-	    	}
-		}  
-		
-//    	for (int idx = 0; idx < pieces.length ; idx++) {
-//    		double totalWins = 0.0;	
-//    		
-//			for (int i = 0; i < numOfSimulations; i++) {
-//				totalWins += playGame(pieces[idx]);
-//			}
-//			double prob = totalWins / numOfSimulations;
-//			System.out.println(pieces[idx] + " : " + prob);
-//			this.wins.put(""+pieces[idx], totalWins);
-//			this.simulations.put(""+pieces[idx], numOfSimulations);
-//    	}
-    }
-	
-	public void runSimulation(int timeLimit, int[][] moves, int piece) {
-		long startTime = System.currentTimeMillis();
-		long endTime = startTime+(timeLimit);
-		while(System.currentTimeMillis()<endTime){
-			for (int idx = 0; idx < moves.length ; idx++) {	
-				String move = moves[idx][0] + ":" + moves[idx][1];
-				this.wins.put(move, this.wins.getOrDefault(move, 0.0) + playGame(moves[idx], piece));
-				this.simulations.put(move, this.simulations.getOrDefault(move, 0) + 1);
-	    	}
+	/*
+	 * BestChild equation from paper
+	 */
+	private double evaluate(Node node, double delta) {
+		return (double)node.getQ() / node.getN() + delta*Math.sqrt(2*Math.log(node.getN()) / node.getN());
+	}
+
+	/*
+	 *  return score from randomly simulated game
+	 */
+	private int defaultPolicy(QuartoBoard board, Integer piece, Boolean player1) {
+		QuartoBoard copyBoard = new QuartoBoard(board);
+		int score;
+		if (piece == null) {
+			piece = semiRandomPieceSelection(copyBoard);
+			score = playGame(copyBoard, piece, false);
+		} else {
+			score = playGame(copyBoard, piece, true);
 		}
-		
-//    	for (int idx = 0; idx < moves.length ; idx++) {
-//    		double totalWins = 0.0;	
-//    		
-//			for (int i = 0; i < numOfSimulations; i++) {
-//				totalWins += playGame(moves[idx], piece);
-//			}
-//			double prob = totalWins / numOfSimulations;
-//			System.out.println(moves[idx][0] + ":" + moves[idx][1] + " - " + prob);
-//			this.stats.put(moves[idx][0] + ":" + moves[idx][1], prob);	
-//    	}
-    }
+		return score;
+	}
+
+	/*
+	 *  function Backup(v, delta)
+	 *  	while v is not null do
+	 *  		N(v) <= N(v) + 1
+	 *  		Q(v) <= Q(v) + delta(v,p)
+	 *  	v <= parent of v
+	 *  	
+	 */
+	private void backup(Node node, int score) {
+		while (node != null) {
+			node.setN(node.getN()+1);
+			if (node.player){
+				node.setQ(node.getQ()+score);
+			} else {
+				node.setQ(node.getQ()-score);
+			}
+			node = node.getParentNode();
+		}
+	}
 	
+	private int parsePiece(String piece) {
+		return Integer.parseInt(piece, 2);
+	}
+	
+	private int[] parseMove(String moveStr) {
+		String[] moveString = moveStr.split(",");
+		int[] move = new int[2];
+		move[0] = Integer.parseInt(moveString[0]);
+		move[1] = Integer.parseInt(moveString[1]);
+		return move;
+	}
+
+	private int playGame(QuartoBoard board, int startingPiece, Boolean player1) {
+
+		int piece = startingPiece;
+
+		while (true) {
+
+			int[] move = semiRandomMove(piece, board);
+
+			board.insertPieceOnBoard(move[0], move[1], piece);
+
+			if (isWin(board, move[0], move[1])) {
+				if (player1)
+					return 1;
+				return 0;
+			}
+
+			if (board.checkIfBoardIsFull())
+				return 0;
+
+			piece = semiRandomPieceSelection(board);
+
+			// Switch payers
+			player1 = !player1;
+		}
+	}
+
 	protected Boolean isWin(QuartoBoard board, int row, int col) {
-		if (board.checkRow(row) || board.checkColumn(col) || board.checkDiagonals()) {
-        	return true;
-        }
+		if (board.checkRow(row) || board.checkColumn(col)
+				|| board.checkDiagonals()) {
+			return true;
+		}
 		return false;
 	}
-	
-    protected int randomPieceSelection(QuartoBoard board) {
-        QuartoBoard copyBoard = new QuartoBoard(board);
-        return copyBoard.chooseRandomPieceNotPlayed(100);
-    }
-	
-    protected int semiRandomPieceSelection(QuartoBoard board) {
-        boolean skip = false;
-        for (int i = 0; i < board.getNumberOfPieces(); i++) {
-            skip = false;
-            if (!board.isPieceOnBoard(i)) {
-                for (int row = 0; row < board.getNumberOfRows(); row++) {
-                    for (int col = 0; col < board.getNumberOfColumns(); col++) {
-                        if (!board.isSpaceTaken(row, col)) {
-                            QuartoBoard copyBoard = new QuartoBoard(board);
-                            copyBoard.insertPieceOnBoard(row, col, i);
-                            if (copyBoard.checkRow(row) || copyBoard.checkColumn(col) || copyBoard.checkDiagonals()) {
-                                skip = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (skip) {
-                        break;
-                    }
 
-                }
-                if (!skip) {
-                    return i;
-                }
-            }
-        }
-        QuartoBoard copyBoard = new QuartoBoard(board);
-        return copyBoard.chooseRandomPieceNotPlayed(100);
-    }
-    
-    protected int[] randomMove(int pieceID, QuartoBoard board) {
-        int[] move = new int[2];
-        QuartoBoard copyBoard = new QuartoBoard(board);
-        move = copyBoard.chooseRandomPositionNotPlayed(100);
+	protected int randomPieceSelection(QuartoBoard board) {
+		QuartoBoard copyBoard = new QuartoBoard(board);
+		return copyBoard.chooseRandomPieceNotPlayed(100);
+	}
 
-        return move;
-    }
-	
-    protected int[] semiRandomMove(int pieceID, QuartoBoard board) {
-        int[] move = new int[2];
-        for (int row = 0; row < board.getNumberOfRows(); row++) {
-            for (int col = 0; col < board.getNumberOfColumns(); col++) {
-                if (!board.isSpaceTaken(row, col)) {
-                    QuartoBoard copyBoard = new QuartoBoard(board);
-                    copyBoard.insertPieceOnBoard(row, col, pieceID);
-                    if (copyBoard.checkRow(row) || copyBoard.checkColumn(col) || copyBoard.checkDiagonals()) {
-                    	move[0] = row;
-                    	move[1] = col;
-                    	return move;
-                    }
-                }
-            }
-        }
+	protected int semiRandomPieceSelection(QuartoBoard board) {
+		boolean skip = false;
+		for (int i = 0; i < board.getNumberOfPieces(); i++) {
+			skip = false;
+			if (!board.isPieceOnBoard(i)) {
+				for (int row = 0; row < board.getNumberOfRows(); row++) {
+					for (int col = 0; col < board.getNumberOfColumns(); col++) {
+						if (!board.isSpaceTaken(row, col)) {
+							QuartoBoard copyBoard = new QuartoBoard(board);
+							copyBoard.insertPieceOnBoard(row, col, i);
+							if (copyBoard.checkRow(row)
+									|| copyBoard.checkColumn(col)
+									|| copyBoard.checkDiagonals()) {
+								skip = true;
+								break;
+							}
+						}
+					}
+					if (skip) {
+						break;
+					}
 
-        // If no winning move is found in the above code, then return a random (unoccupied) square
-        QuartoBoard copyBoard = new QuartoBoard(board);
-        return copyBoard.chooseRandomPositionNotPlayed(100);
-    }
-    
-    public int[][] getPossibleMoves() {
-    	ArrayList<int[]> movesList = new ArrayList<int[]>();
-    	
-    	for (int row = 0; row < this.board.getNumberOfRows(); row++) {
-             for (int col = 0; col < this.board.getNumberOfColumns(); col++) {
-            	 if(!this.board.isSpaceTaken(row, col)) {
-            		 int[] moves = {row, col};
-            		 movesList.add(moves);
-            	 }
-             }
-    	}
-    	Object[] movesObjects = movesList.toArray();
-    	
-    	int[][] moves = new int[movesObjects.length][2];
-    	
-    	for  (int i = 1; i < movesObjects.length; i++) {
-    		moves[i][0] = ((int[])movesObjects[i])[0];
-    		moves[i][1] = ((int[])movesObjects[i])[1];
-    	}
-    	
-    	return moves;
-    }
+				}
+				if (!skip) {
+					return i;
+				}
+			}
+		}
+		QuartoBoard copyBoard = new QuartoBoard(board);
+		return copyBoard.chooseRandomPieceNotPlayed(100);
+	}
 
-    public int[] getPossiblePieces() {
-    	ArrayList<Integer> pieceList = new ArrayList<Integer>();
-    	for (int i = 0; i < this.board.getNumberOfPieces(); i++) {
-    		 if (!this.board.isPieceOnBoard(i)) {
-    			 pieceList.add(i);
-    		 }
-    	}
-    	Object[] piecesObjects = pieceList.toArray();
-    	
-    	int[] pieces = new int[piecesObjects.length];
-    	
-    	for  (int i = 1; i < piecesObjects.length; i++) {
-    		pieces[i] = (int)piecesObjects[i];
-    	}
-    	
-    	return pieces;
-    }
-    
+	protected int[] randomMove(int pieceID, QuartoBoard board) {
+		int[] move = new int[2];
+		QuartoBoard copyBoard = new QuartoBoard(board);
+		move = copyBoard.chooseRandomPositionNotPlayed(100);
+
+		return move;
+	}
+
+	protected int[] semiRandomMove(int pieceID, QuartoBoard board) {
+		int[] move = new int[2];
+		for (int row = 0; row < board.getNumberOfRows(); row++) {
+			for (int col = 0; col < board.getNumberOfColumns(); col++) {
+				if (!board.isSpaceTaken(row, col)) {
+					QuartoBoard copyBoard = new QuartoBoard(board);
+					copyBoard.insertPieceOnBoard(row, col, pieceID);
+					if (copyBoard.checkRow(row) || copyBoard.checkColumn(col)
+							|| copyBoard.checkDiagonals()) {
+						move[0] = row;
+						move[1] = col;
+						return move;
+					}
+				}
+			}
+		}
+
+		// If no winning move is found in the above code, then return a random
+		// (unoccupied) square
+		QuartoBoard copyBoard = new QuartoBoard(board);
+		return copyBoard.chooseRandomPositionNotPlayed(100);
+	}
+
+	public static int[][] getPossibleMoves(QuartoBoard board) {
+		ArrayList<int[]> movesList = new ArrayList<int[]>();
+
+		for (int row = 0; row < board.getNumberOfRows(); row++) {
+			for (int col = 0; col < board.getNumberOfColumns(); col++) {
+				if (!board.isSpaceTaken(row, col)) {
+					int[] moves = { row, col };
+					movesList.add(moves);
+				}
+			}
+		}
+		Object[] movesObjects = movesList.toArray();
+
+		int[][] moves = new int[movesObjects.length][2];
+
+		for (int i = 1; i < movesObjects.length; i++) {
+			moves[i][0] = ((int[]) movesObjects[i])[0];
+			moves[i][1] = ((int[]) movesObjects[i])[1];
+		}
+
+		return moves;
+	}
+
+	public static int[] getPossiblePieces(QuartoBoard board) {
+		ArrayList<Integer> pieceList = new ArrayList<Integer>();
+		for (int i = 0; i < board.getNumberOfPieces(); i++) {
+			if (!board.isPieceOnBoard(i)) {
+				pieceList.add(i);
+			}
+		}
+		Object[] piecesObjects = pieceList.toArray();
+
+		int[] pieces = new int[piecesObjects.length];
+
+		for (int i = 0; i < piecesObjects.length; i++) {
+			pieces[i] = (int) piecesObjects[i];
+		}
+
+		return pieces;
+	}
+
 	public static void main(String[] args) {
+		 QuartoBoard board = new QuartoBoard(5,5,32, null);
 		
-		QuartoBoard board = new QuartoBoard(5,5,32, null);
+		 MonteCarlo mc = new MonteCarlo(9000, 1 / Math.sqrt(2));
 		
-		MonteCarlo mc = new MonteCarlo(board);
+		 String bestAction = mc.UCTSearch(board, null);
 		
-	    int[] pieces = mc.getPossiblePieces();
-	    
-		mc.runSimulation(800, pieces);	
-		
-    	int max = 0;
-    	for(int i = 1; i < mc.simulations.size(); i++) {
-    		double maxProb = mc.wins.get(""+max) / mc.simulations.get(""+max);
-    		double prob = mc.wins.get(""+i) / mc.simulations.get(""+i);
-    		if (maxProb < prob) max = i;
-    	}
-    	double maxProbability = mc.wins.get(""+max) / mc.simulations.get(""+max);
-    	System.out.println(max + " with prob " + maxProbability + " with # of simulations: " + mc.simulations.get(""+max));
-    	
-    	int[][] moves = mc.getPossibleMoves();
-    	
-    	mc.runSimulation(800, moves, 0);	
-		
-    	max = 0;
-    	for (int i = 1; i < moves.length; i++) {
-    		String maxMove = moves[max][0] + ":" + moves[max][1];
-    		String move = moves[i][0] + ":" + moves[i][1];
-    		double maxProb = mc.wins.get(maxMove) / mc.simulations.get(maxMove);
-    		double prob = mc.wins.get(move) / mc.simulations.get(move);
-    		if (maxProb < prob) max = i;
-    	}
-
-    	String maxMove = moves[max][0] + ":" + moves[max][1];
-    	maxProbability = mc.wins.get(maxMove) / mc.simulations.get(maxMove);
-    	System.out.println(maxMove + " with prob " + maxProbability + " with # of simulations: " + mc.simulations.get(maxMove));
-    	
+		 System.out.println(bestAction); 
 	}
 }
