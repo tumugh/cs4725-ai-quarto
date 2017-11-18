@@ -78,10 +78,10 @@ class Node {
 class SelectPieceNode extends Node {
 	public SelectPieceNode(QuartoBoard board) {
 		super(board);
-		int[] moves = MonteCarlo.getPossiblePieces(board);
-		for (int i = 0 ; i < moves.length ; i++) {
-			String move = String.format("%5s", Integer.toBinaryString(moves[i])).replace(' ', '0');
-			this.remainingMoves.add(move);
+		ArrayList<Integer> moves = MonteCarlo.getPossiblePieces(board);
+		for (Integer move: moves) {
+			String action = String.format("%5s", Integer.toBinaryString(move)).replace(' ', '0');
+			this.remainingMoves.add(action);
 		}
 	}	
 	
@@ -95,10 +95,10 @@ class SelectMoveNode extends Node {
 	
 	public SelectMoveNode(QuartoBoard board) {
 		super(board);
-		int[][] moves = MonteCarlo.getPossibleMoves(board); //new int[][]{{0,0}, {0,2}, {0,1}, {0,3}, {1,1}, {1,2}, {2,2}};
-		for (int i = 0 ; i < moves.length ; i++) {
-			String move = moves[i][0] + "," + moves[i][1];
-			this.remainingMoves.add(move);
+		ArrayList<int[]> movesList = MonteCarlo.getPossibleMoves(board); //new int[][]{{0,0}, {0,2}, {0,1}, {0,3}, {1,1}, {1,2}, {2,2}};
+		for (int[] move : movesList) {
+			String action = move[0] + "," + move[1];
+			this.remainingMoves.add(action);
 		}
 	}
 	

@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,7 +59,7 @@ public class MonteCarlo {
 		}
 
 		// return action(BestChild(v0,0))
-		printTree("Root", root);
+		// printTree("Root", root);
 		
 		return bestChild(root, 0).getAction();
 	}
@@ -175,7 +176,7 @@ public class MonteCarlo {
 		QuartoBoard copyBoard = new QuartoBoard(board);
 		int score;
 		if (piece == null) {
-			piece = semiRandomPieceSelection(copyBoard);
+			piece = randomPieceSelection(copyBoard);
 			score = playGame(copyBoard, piece, false);
 		} else {
 			score = playGame(copyBoard, piece, true);
@@ -221,7 +222,7 @@ public class MonteCarlo {
 
 		while (true) {
 
-			int[] move = semiRandomMove(piece, board);
+			int[] move = randomMove(piece, board);
 
 			board.insertPieceOnBoard(move[0], move[1], piece);
 
@@ -234,7 +235,7 @@ public class MonteCarlo {
 			if (board.checkIfBoardIsFull())
 				return 0;
 
-			piece = semiRandomPieceSelection(board);
+			piece = randomPieceSelection(board);
 
 			// Switch payers
 			player1 = !player1;
@@ -317,25 +318,18 @@ public class MonteCarlo {
 		return copyBoard.chooseRandomPositionNotPlayed(100);
 	}
 
-	public static int[] getPossiblePieces(QuartoBoard board) {
-		ArrayList<Integer> pieceList = new ArrayList<Integer>();
+	public static ArrayList<Integer> getPossiblePieces(QuartoBoard board) {
+		ArrayList<Integer> pieces = new ArrayList<Integer>();
 		for (int i = 0; i < board.getNumberOfPieces(); i++) {
 			if (!board.isPieceOnBoard(i)) {
-				pieceList.add(i);
+				pieces.add(i);
 			}
-		}
-		Object[] piecesObjects = pieceList.toArray();
-
-		int[] pieces = new int[piecesObjects.length];
-
-		for (int i = 0; i < piecesObjects.length; i++) {
-			pieces[i] = (int) piecesObjects[i];
 		}
 
 		return pieces;
 	}
 	
-	public static int[][] getPossibleMoves(QuartoBoard board) {
+	public static ArrayList<int[]> getPossibleMoves(QuartoBoard board) {
 		ArrayList<int[]> movesList = new ArrayList<int[]>();
 
 		for (int row = 0; row < board.getNumberOfRows(); row++) {
@@ -346,16 +340,7 @@ public class MonteCarlo {
 				}
 			}
 		}
-		Object[] movesObjects = movesList.toArray();
-
-		int[][] moves = new int[movesObjects.length][2];
-
-		for (int i = 1; i < movesObjects.length; i++) {
-			moves[i][0] = ((int[]) movesObjects[i])[0];
-			moves[i][1] = ((int[]) movesObjects[i])[1];
-		}
-
-		return moves;
+		return movesList;
 	}
 	
 	public static int[][] getPossibleMoves(QuartoBoard board, Integer piece) {
