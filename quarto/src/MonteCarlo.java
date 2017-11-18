@@ -59,7 +59,7 @@ public class MonteCarlo {
 		}
 
 		// return action(BestChild(v0,0))
-		// printTree("Root", root);
+		 printTree("Root", root);
 		
 		return bestChild(root, 0).getAction();
 	}
@@ -101,9 +101,8 @@ public class MonteCarlo {
 		
 		String action = node.getRemainingMoves().get(0);
 		if (node instanceof SelectPieceNode) {
-			// Instance of SelectMoveNode without piece available
-			// TODO: Figure out what to do here w/o a piece
-			child = new SelectMoveNode(node.getBoard());
+			int pieceId = parsePiece(action);
+			child = new SelectMoveNode(node.getBoard(), pieceId);
 		} else {
 			QuartoBoard copyBoard = new QuartoBoard(node.getBoard());
 			int piece = parsePiece(node.getAction());
@@ -399,9 +398,7 @@ public class MonteCarlo {
 	public static boolean areEqualPieces(QuartoPiece p1, QuartoPiece p2) {
 		if (p1 == null && p2 == null) {
 			return true;
-		} else if (p1 != null && p2 == null) {
-			return false;
-		} else if (p1 == null && p2 != null) {
+		} else if (p1 == null || p2 == null) {
 			return false;
 		} else {
 			return p1.getPieceID() == p2.getPieceID();
@@ -423,8 +420,8 @@ public class MonteCarlo {
 	public static QuartoBoard rotateBoard(QuartoBoard board) {
 		QuartoBoard copyBoard = new QuartoBoard(board);
 		
-		for(int i = 0; i < board.getNumberOfRows(); i++){
-			for(int j = board.getNumberOfColumns() - 1; j >= 0; j--){
+		for(int i = 0; i < board.getNumberOfRows(); i++) {
+			for(int j = board.getNumberOfColumns() - 1; j >= 0; j--) {
 				copyBoard.board[i][board.getNumberOfColumns() - j - 1] = board.board[j][i];
 			}
 		}
@@ -434,26 +431,25 @@ public class MonteCarlo {
 	
 	public static void main(String[] args) {
 		 QuartoBoard board = new QuartoBoard(5,5,32, null);
-		 board.board[2][2] = new QuartoPiece(1);
-		 board.board[0][2] = new QuartoPiece(2);
+//		 board.board[2][2] = new QuartoPiece(1);
+//		 board.board[0][2] = new QuartoPiece(2);
 
-		 
 //		 Set<QuartoBoard> set = findSymmetricBoards(board);
 //		 for (QuartoBoard symboard : set) {
 //			 symboard.printBoardState();
 //		 }
 //		 
-		 int[][] moves = getPossibleMoves(board, 3);
+//		 int[][] moves = getPossibleMoves(board, 3);
+//		 
+//		 for (int i = 0 ; i < moves.length ; i++) {
+//			String move = moves[i][0] + "," + moves[i][1];
+//			System.out.println(move);
+//		 }
 		 
-		 for (int i = 0 ; i < moves.length ; i++) {
-			String move = moves[i][0] + "," + moves[i][1];
-			System.out.println(move);
-		 }
-		 
-//		 MonteCarlo mc = new MonteCarlo(9000, 1 / Math.sqrt(2));
-//		
-//		 String bestAction = mc.UCTSearch(board, null);
-//		
-//		 System.out.println(bestAction); 
+		 MonteCarlo mc = new MonteCarlo(9000, 1 / Math.sqrt(2));
+		
+		 String bestAction = mc.UCTSearch(board, 1);
+		
+		 System.out.println(bestAction); 
 	}
 }
