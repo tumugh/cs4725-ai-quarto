@@ -153,7 +153,7 @@ public class MonteCarlo {
 	private void printTree(String name, Node node) {
 		System.out.println(name+ ": Q-"+node.getQ()+", N-"+node.getN());
 		ArrayList<Node> children = node.getChildren();
-		for (int i = 1; i < children.size() ; i++) {
+		for (int i = 0; i < children.size() ; i++) {
 			printTree("\t"+children.get(i).getAction(), children.get(i));
 		}
 		if ("Root" == name) {
@@ -228,7 +228,7 @@ public class MonteCarlo {
 			if (isWin(board, move[0], move[1])) {
 				if (player1)
 					return 1;
-				return 0;
+				return -1;
 			}
 
 			if (board.checkIfBoardIsFull())
