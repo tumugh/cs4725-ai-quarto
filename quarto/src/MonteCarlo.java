@@ -32,7 +32,7 @@ public class MonteCarlo {
 		if (piece == null) {
 			root = new SelectPieceNode(board);
 		} else {
-			root = new SelectMoveNode(board, piece);
+			root = new SelectMoveNode(board);
 			((SelectMoveNode) root).setAction(piece);
 		}
 
@@ -47,11 +47,13 @@ public class MonteCarlo {
 			if (child instanceof SelectMoveNode) {
 				piece = parsePiece(child.getAction());
 				score = defaultPolicy(board, piece, child.player);
-			} else {
+			} else if (child instanceof SelectPieceNode){
 				int[] move = parseMove(child.getAction());
 				QuartoBoard copyBoard = new QuartoBoard(board);
 				copyBoard.insertPieceOnBoard(move[0], move[1], piece);
 				score = defaultPolicy(copyBoard, null, child.player);
+			} else {
+				score = ((TerminatingNode) child).getValue();
 			}
 			
 			//Backup(v1, delta)
@@ -101,8 +103,8 @@ public class MonteCarlo {
 		
 		String action = node.getRemainingMoves().get(0);
 		if (node instanceof SelectPieceNode) {
-			int pieceId = parsePiece(action);
-			child = new SelectMoveNode(node.getBoard(), pieceId);
+			//int pieceId = parsePiece(action);
+			child = new SelectMoveNode(node.getBoard());
 		} else {
 			QuartoBoard copyBoard = new QuartoBoard(node.getBoard());
 			int piece = parsePiece(node.getAction());
@@ -111,8 +113,8 @@ public class MonteCarlo {
 			
 			if (isWin(copyBoard, move[0], move[1])) {
 				if (node.player)
-					child = new TerminatingNode(copyBoard, 1);
-				child = new TerminatingNode(copyBoard, 0);
+					child = new TerminatingNode(copyBoard, -1);
+				child = new TerminatingNode(copyBoard, 1);
 			} else if (copyBoard.checkIfBoardIsFull()) {
 				child = new TerminatingNode(copyBoard, 0);
 			} else {
@@ -151,7 +153,7 @@ public class MonteCarlo {
 	}
 	
 	private void printTree(String name, Node node) {
-		System.out.println(name+ ": Q-"+node.getQ()+", N-"+node.getN());
+		System.out.println(name+ ": Q=>"+node.getQ()+", N=>"+node.getN());
 		ArrayList<Node> children = node.getChildren();
 		for (int i = 0; i < children.size() ; i++) {
 			printTree("\t"+children.get(i).getAction(), children.get(i));
@@ -431,9 +433,11 @@ public class MonteCarlo {
 	
 	public static void main(String[] args) {
 		 QuartoBoard board = new QuartoBoard(5,5,32, null);
-//		 board.board[2][2] = new QuartoPiece(1);
-//		 board.board[0][2] = new QuartoPiece(2);
-
+		 board.board[0][1] = new QuartoPiece(1);
+		 board.board[0][2] = new QuartoPiece(2);
+		 board.board[0][3] = new QuartoPiece(3);
+		 board.board[0][4] = new QuartoPiece(4);
+		 
 //		 Set<QuartoBoard> set = findSymmetricBoards(board);
 //		 for (QuartoBoard symboard : set) {
 //			 symboard.printBoardState();
@@ -448,7 +452,7 @@ public class MonteCarlo {
 		 
 		 MonteCarlo mc = new MonteCarlo(9000, 1 / Math.sqrt(2));
 		
-		 String bestAction = mc.UCTSearch(board, 1);
+		 String bestAction = mc.UCTSearch(board, null);
 		
 		 System.out.println(bestAction); 
 	}

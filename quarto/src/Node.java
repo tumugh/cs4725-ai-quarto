@@ -20,6 +20,7 @@ class Node {
 		this.remainingMoves = new ArrayList<String>();
 		this.board = board;
 		this.player = true;
+		this.n = 1;
 	}
 	
 	public QuartoBoard getBoard() {
@@ -27,7 +28,7 @@ class Node {
 	}
 	
 	public int getN() {
-		return n;
+		return this.n;
 	}
 	
 	public void setN(int n) {
