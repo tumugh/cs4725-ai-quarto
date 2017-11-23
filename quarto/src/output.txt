@@ -1,0 +1,735 @@
+Connected to server
+Received the following message from the server: PLAYER: 1
+PLAYER: 1
+Received the following message from the server: TURN_TIME_LIMIT: 10000
+TURN_TIME_LIMIT: 10000
+-----------------------------------
+null   null   null   null   null   
+null   null   null   null   null   
+null   null   null   null   null   
+null   null   null   null   null   
+null   null   null   null   null   
+-----------------------------------
+Received the following message from the server: Q2: 11100 (please select move)
+Root: Q=>221, N=>12006
+	0,0: Q=>194, N=>3692
+	0,1: Q=>-6, N=>690
+	0,2: Q=>-15, N=>254
+	0,3: Q=>-1, N=>2
+	0,4: Q=>-1, N=>2
+	1,0: Q=>-13, N=>103
+	1,1: Q=>-1, N=>2
+	1,2: Q=>-1, N=>2
+	1,3: Q=>-4, N=>10
+	1,4: Q=>-14, N=>377
+	2,0: Q=>-1, N=>2
+	2,1: Q=>-6, N=>18
+	2,2: Q=>19, N=>1313
+	2,3: Q=>-3, N=>6
+	2,4: Q=>-1, N=>2
+	3,0: Q=>55, N=>2026
+	3,1: Q=>-1, N=>2
+	3,2: Q=>28, N=>1496
+	3,3: Q=>-1, N=>2
+	3,4: Q=>1, N=>907
+	4,0: Q=>8, N=>1065
+	4,1: Q=>-1, N=>2
+	4,2: Q=>-10, N=>47
+	4,3: Q=>-3, N=>6
+	4,4: Q=>-1, N=>2
+Best Action: 0,0
+Sent the following message to the server: 0,0
+Received the following message from the server: ACK_MOVE: 0,0
+-----------------------------------
+11100  null   null   null   null   
+null   null   null   null   null   
+null   null   null   null   null   
+null   null   null   null   null   
+null   null   null   null   null   
+-----------------------------------
+Received the following message from the server: Q1: Please choose piece for player 2
+Root: Q=>-281, N=>13024
+	00000: Q=>-1, N=>2
+	00001: Q=>19, N=>1245
+	00010: Q=>-3, N=>6
+	00011: Q=>197, N=>4225
+	00100: Q=>-1, N=>2
+	00101: Q=>47, N=>1790
+	00110: Q=>11, N=>1071
+	00111: Q=>-1, N=>2
+	01000: Q=>-1, N=>2
+	01001: Q=>-1, N=>2
+	01010: Q=>-1, N=>2
+	01011: Q=>-1, N=>2
+	01100: Q=>-1, N=>2
+	01101: Q=>101, N=>2723
+	01110: Q=>-1, N=>2
+	01111: Q=>-15, N=>177
+	10000: Q=>-1, N=>2
+	10001: Q=>-11, N=>476
+	10010: Q=>-6, N=>17
+	10011: Q=>-1, N=>2
+	10100: Q=>-1, N=>2
+	10101: Q=>-1, N=>2
+	10110: Q=>-6, N=>336
+	10111: Q=>-1, N=>2
+	11000: Q=>-1, N=>2
+	11001: Q=>-9, N=>557
+	11010: Q=>-14, N=>344
+	11011: Q=>-10, N=>47
+	11101: Q=>-1, N=>2
+	11110: Q=>-1, N=>2
+	11111: Q=>-3, N=>6
+Best Action: 00011
+Sent the following message to the server: 00011
+Received the following message from the server: ACK_PIECE: 00011
+Received the following message from the server: MOVE: 2,2
+-----------------------------------
+11100  null   null   null   null   
+null   null   null   null   null   
+null   null   00011  null   null   
+null   null   null   null   null   
+null   null   null   null   null   
+-----------------------------------
+Received the following message from the server: Q2: 00000 (please select move)
+Root: Q=>106, N=>13677
+	0,1: Q=>-8, N=>837
+	0,2: Q=>-11, N=>741
+	0,3: Q=>-2, N=>3
+	0,4: Q=>49, N=>2243
+	1,0: Q=>14, N=>1437
+	1,1: Q=>-14, N=>108
+	1,2: Q=>-17, N=>245
+	1,3: Q=>41, N=>1556
+	1,4: Q=>-2, N=>3
+	2,0: Q=>14, N=>1440
+	2,1: Q=>-2, N=>3
+	2,3: Q=>-13, N=>625
+	2,4: Q=>-2, N=>3
+	3,0: Q=>-2, N=>3
+	3,1: Q=>-2, N=>3
+	3,2: Q=>-15, N=>124
+	3,3: Q=>-2, N=>3
+	3,4: Q=>-4, N=>10
+	4,0: Q=>66, N=>2585
+	4,1: Q=>25, N=>1715
+	4,2: Q=>-3, N=>6
+	4,3: Q=>-2, N=>3
+	4,4: Q=>-2, N=>3
+Best Action: 1,3
+Sent the following message to the server: 1,3
+Received the following message from the server: ACK_MOVE: 1,3
+-----------------------------------
+11100  null   null   null   null   
+null   null   null   00000  null   
+null   null   00011  null   null   
+null   null   null   null   null   
+null   null   null   null   null   
+-----------------------------------
+Received the following message from the server: Q1: Please choose piece for player 2
+Root: Q=>-328, N=>14585
+	00001: Q=>11, N=>1087
+	00010: Q=>-14, N=>127
+	00100: Q=>-1, N=>2
+	00101: Q=>-1, N=>2
+	00110: Q=>55, N=>1942
+	00111: Q=>-10, N=>521
+	01000: Q=>-1, N=>2
+	01001: Q=>-1, N=>2
+	01010: Q=>-1, N=>2
+	01011: Q=>-8, N=>32
+	01100: Q=>13, N=>1131
+	01101: Q=>198, N=>4244
+	01110: Q=>-11, N=>493
+	01111: Q=>-1, N=>2
+	10000: Q=>-1, N=>2
+	10001: Q=>-1, N=>2
+	10010: Q=>-4, N=>9
+	10011: Q=>-1, N=>2
+	10100: Q=>-1, N=>2
+	10101: Q=>10, N=>1051
+	10110: Q=>115, N=>2935
+	10111: Q=>4, N=>910
+	11000: Q=>-13, N=>95
+	11001: Q=>-3, N=>6
+	11010: Q=>-1, N=>2
+	11011: Q=>-1, N=>2
+	11101: Q=>-1, N=>2
+	11110: Q=>-1, N=>2
+	11111: Q=>-1, N=>2
+Best Action: 01101
+Sent the following message to the server: 01101
+Received the following message from the server: ACK_PIECE: 01101
+Received the following message from the server: MOVE: 0,4
+-----------------------------------
+11100  null   null   null   01101  
+null   null   null   00000  null   
+null   null   00011  null   null   
+null   null   null   null   null   
+null   null   null   null   null   
+-----------------------------------
+Received the following message from the server: Q2: 00010 (please select move)
+Root: Q=>68, N=>15787
+	0,1: Q=>-2, N=>3
+	0,2: Q=>20, N=>1964
+	0,3: Q=>-7, N=>22
+	1,0: Q=>-5, N=>12
+	1,1: Q=>-11, N=>1000
+	1,2: Q=>-18, N=>663
+	1,4: Q=>31, N=>2241
+	2,0: Q=>-11, N=>1021
+	2,1: Q=>-13, N=>75
+	2,3: Q=>-2, N=>3
+	2,4: Q=>49, N=>2435
+	3,0: Q=>-10, N=>44
+	3,1: Q=>39, N=>2451
+	3,2: Q=>-4, N=>9
+	3,3: Q=>-2, N=>3
+	3,4: Q=>37, N=>2391
+	4,0: Q=>-2, N=>3
+	4,1: Q=>-2, N=>3
+	4,2: Q=>-1, N=>1361
+	4,3: Q=>-15, N=>98
+	4,4: Q=>-3, N=>5
+Best Action: 2,4
+Sent the following message to the server: 2,4
+Received the following message from the server: ACK_MOVE: 2,4
+-----------------------------------
+11100  null   null   null   01101  
+null   null   null   00000  null   
+null   null   00011  null   00010  
+null   null   null   null   null   
+null   null   null   null   null   
+-----------------------------------
+Received the following message from the server: Q1: Please choose piece for player 2
+Root: Q=>-24, N=>16747
+	00001: Q=>-15, N=>200
+	00100: Q=>-2, N=>3
+	00101: Q=>-2, N=>3
+	00110: Q=>-15, N=>172
+	00111: Q=>44, N=>1844
+	01000: Q=>-6, N=>17
+	01001: Q=>9, N=>1115
+	01010: Q=>-10, N=>579
+	01011: Q=>21, N=>1390
+	01100: Q=>-16, N=>242
+	01110: Q=>-2, N=>3
+	01111: Q=>26, N=>1482
+	10000: Q=>-15, N=>379
+	10001: Q=>-3, N=>798
+	10010: Q=>-2, N=>3
+	10011: Q=>-15, N=>197
+	10100: Q=>6, N=>1035
+	10101: Q=>-4, N=>791
+	10110: Q=>-3, N=>5
+	10111: Q=>-14, N=>420
+	11000: Q=>-7, N=>702
+	11001: Q=>-14, N=>303
+	11010: Q=>5, N=>1011
+	11011: Q=>-2, N=>832
+	11101: Q=>35, N=>1664
+	11110: Q=>-5, N=>12
+	11111: Q=>30, N=>1571
+Best Action: 00111
+Sent the following message to the server: 00111
+Received the following message from the server: ACK_PIECE: 00111
+Received the following message from the server: MOVE: 4,4
+-----------------------------------
+11100  null   null   null   01101  
+null   null   null   00000  null   
+null   null   00011  null   00010  
+null   null   null   null   null   
+null   null   null   null   00111  
+-----------------------------------
+Received the following message from the server: Q2: 01000 (please select move)
+Root: Q=>253, N=>18110
+	0,1: Q=>64, N=>2916
+	0,2: Q=>130, N=>4311
+	0,3: Q=>-2, N=>3
+	1,0: Q=>-14, N=>819
+	1,1: Q=>-3, N=>6
+	1,2: Q=>-2, N=>3
+	1,4: Q=>5, N=>1462
+	2,0: Q=>-2, N=>3
+	2,1: Q=>-3, N=>6
+	2,3: Q=>-1, N=>1279
+	3,0: Q=>-15, N=>749
+	3,1: Q=>-2, N=>3
+	3,2: Q=>58, N=>2791
+	3,3: Q=>18, N=>1815
+	3,4: Q=>-2, N=>3
+	4,0: Q=>-3, N=>6
+	4,1: Q=>-5, N=>13
+	4,2: Q=>-3, N=>6
+	4,3: Q=>35, N=>1934
+Best Action: 0,2
+Sent the following message to the server: 0,2
+Received the following message from the server: ACK_MOVE: 0,2
+-----------------------------------
+11100  null   01000  null   01101  
+null   null   null   00000  null   
+null   null   00011  null   00010  
+null   null   null   null   null   
+null   null   null   null   00111  
+-----------------------------------
+Received the following message from the server: Q1: Please choose piece for player 2
+Root: Q=>-350, N=>19685
+	00001: Q=>59, N=>2139
+	00100: Q=>3, N=>967
+	00101: Q=>3, N=>984
+	00110: Q=>-2, N=>3
+	01001: Q=>-2, N=>3
+	01010: Q=>2, N=>960
+	01011: Q=>45, N=>1884
+	01100: Q=>-3, N=>6
+	01110: Q=>-16, N=>205
+	01111: Q=>-2, N=>3
+	10000: Q=>55, N=>1876
+	10001: Q=>-8, N=>34
+	10010: Q=>1, N=>929
+	10011: Q=>-2, N=>3
+	10100: Q=>-15, N=>162
+	10101: Q=>-2, N=>3
+	10110: Q=>-8, N=>29
+	10111: Q=>57, N=>2099
+	11000: Q=>-7, N=>22
+	11001: Q=>16, N=>1274
+	11010: Q=>-15, N=>385
+	11011: Q=>-2, N=>3
+	11101: Q=>43, N=>1837
+	11110: Q=>-9, N=>43
+	11111: Q=>159, N=>3856
+Best Action: 11111
+Sent the following message to the server: 11111
+Received the following message from the server: ACK_PIECE: 11111
+Received the following message from the server: MOVE: 4,2
+-----------------------------------
+11100  null   01000  null   01101  
+null   null   null   00000  null   
+null   null   00011  null   00010  
+null   null   null   null   null   
+null   null   11111  null   00111  
+-----------------------------------
+Received the following message from the server: Q2: 00001 (please select move)
+Root: Q=>291, N=>20914
+	0,1: Q=>-2, N=>3
+	0,3: Q=>-8, N=>25
+	1,0: Q=>45, N=>2708
+	1,1: Q=>40, N=>2576
+	1,2: Q=>5, N=>1637
+	1,4: Q=>-6, N=>17
+	2,0: Q=>-2, N=>3
+	2,1: Q=>-2, N=>1394
+	2,3: Q=>-12, N=>58
+	3,0: Q=>-2, N=>3
+	3,1: Q=>-11, N=>55
+	3,2: Q=>-18, N=>763
+	3,3: Q=>57, N=>2999
+	3,4: Q=>134, N=>4287
+	4,0: Q=>-20, N=>540
+	4,1: Q=>95, N=>3859
+	4,3: Q=>-2, N=>3
+Best Action: 3,4
+Sent the following message to the server: 3,4
+Received the following message from the server: ACK_MOVE: 3,4
+-----------------------------------
+11100  null   01000  null   01101  
+null   null   null   00000  null   
+null   null   00011  null   00010  
+null   null   null   null   00001  
+null   null   11111  null   00111  
+-----------------------------------
+Received the following message from the server: Q1: Please choose piece for player 2
+Root: Q=>-332, N=>25062
+	00100: Q=>19, N=>1774
+	00101: Q=>-2, N=>3
+	00110: Q=>-12, N=>833
+	01001: Q=>-9, N=>38
+	01010: Q=>-19, N=>295
+	01011: Q=>-4, N=>1099
+	01100: Q=>-3, N=>6
+	01110: Q=>-19, N=>400
+	01111: Q=>-5, N=>1072
+	10000: Q=>-2, N=>3
+	10001: Q=>-2, N=>3
+	10010: Q=>-10, N=>48
+	10011: Q=>45, N=>2378
+	10100: Q=>24, N=>1898
+	10101: Q=>46, N=>2401
+	10110: Q=>-16, N=>651
+	10111: Q=>-3, N=>6
+	11000: Q=>-13, N=>80
+	11001: Q=>166, N=>4743
+	11010: Q=>28, N=>1996
+	11011: Q=>120, N=>3960
+	11101: Q=>5, N=>1394
+	11110: Q=>-2, N=>3
+Best Action: 11001
+Sent the following message to the server: 11001
+Received the following message from the server: ACK_PIECE: 11001
+Received the following message from the server: MOVE: 3,0
+-----------------------------------
+11100  null   01000  null   01101  
+null   null   null   00000  null   
+null   null   00011  null   00010  
+11001  null   null   null   00001  
+null   null   11111  null   00111  
+-----------------------------------
+Received the following message from the server: Q2: 10000 (please select move)
+Root: Q=>149, N=>25204
+	0,1: Q=>-20, N=>2180
+	0,3: Q=>-11, N=>44
+	1,0: Q=>-4, N=>9
+	1,1: Q=>-16, N=>2395
+	1,2: Q=>-14, N=>69
+	1,4: Q=>359, N=>13910
+	2,0: Q=>-33, N=>1010
+	2,1: Q=>-20, N=>145
+	2,3: Q=>-27, N=>302
+	3,1: Q=>-15, N=>82
+	3,2: Q=>-2, N=>3
+	3,3: Q=>22, N=>4114
+	4,0: Q=>-33, N=>702
+	4,1: Q=>-20, N=>149
+	4,3: Q=>-17, N=>104
+Best Action: 1,4
+Sent the following message to the server: 1,4
+Received the following message from the server: ACK_MOVE: 1,4
+-----------------------------------
+11100  null   01000  null   01101  
+null   null   null   00000  10000  
+null   null   00011  null   00010  
+11001  null   null   null   00001  
+null   null   11111  null   00111  
+-----------------------------------
+Received the following message from the server: Q1: Please choose piece for player 2
+Root: Q=>-588, N=>26059
+	00100: Q=>-16, N=>722
+	00101: Q=>-3, N=>6
+	00110: Q=>-2, N=>3
+	01001: Q=>-3, N=>5
+	01010: Q=>264, N=>6903
+	01011: Q=>-2, N=>3
+	01100: Q=>-2, N=>3
+	01110: Q=>-2, N=>3
+	01111: Q=>192, N=>5210
+	10001: Q=>-18, N=>204
+	10010: Q=>-2, N=>3
+	10011: Q=>-17, N=>658
+	10100: Q=>38, N=>2327
+	10101: Q=>212, N=>5944
+	10110: Q=>-18, N=>568
+	10111: Q=>-11, N=>57
+	11000: Q=>-16, N=>721
+	11010: Q=>-15, N=>792
+	11011: Q=>21, N=>1903
+	11101: Q=>-9, N=>38
+	11110: Q=>-3, N=>6
+Best Action: 01010
+Sent the following message to the server: 01010
+Received the following message from the server: ACK_PIECE: 01010
+Received the following message from the server: MOVE: 1,0
+-----------------------------------
+11100  null   01000  null   01101  
+01010  null   null   00000  10000  
+null   null   00011  null   00010  
+11001  null   null   null   00001  
+null   null   11111  null   00111  
+-----------------------------------
+Received the following message from the server: Q2: 00100 (please select move)
+Root: Q=>642, N=>28068
+	0,1: Q=>-8, N=>28
+	0,3: Q=>-9, N=>32
+	1,1: Q=>-16, N=>107
+	1,2: Q=>11, N=>2377
+	2,0: Q=>323, N=>9113
+	2,1: Q=>-25, N=>655
+	2,3: Q=>273, N=>9062
+	3,1: Q=>-5, N=>12
+	3,2: Q=>-2, N=>3
+	3,3: Q=>-2, N=>3
+	4,0: Q=>-2, N=>3
+	4,1: Q=>122, N=>5482
+	4,3: Q=>-18, N=>1203
+Best Action: 2,0
+Sent the following message to the server: 2,0
+Received the following message from the server: ACK_MOVE: 2,0
+-----------------------------------
+11100  null   01000  null   01101  
+01010  null   null   00000  10000  
+00100  null   00011  null   00010  
+11001  null   null   null   00001  
+null   null   11111  null   00111  
+-----------------------------------
+Received the following message from the server: Q1: Please choose piece for player 2
+Root: Q=>-625, N=>30440
+	00101: Q=>-8, N=>25
+	00110: Q=>233, N=>6839
+	01001: Q=>-2, N=>3
+	01011: Q=>204, N=>6261
+	01100: Q=>-17, N=>148
+	01110: Q=>-20, N=>226
+	01111: Q=>-2, N=>3
+	10001: Q=>-4, N=>1144
+	10010: Q=>53, N=>2957
+	10011: Q=>-13, N=>68
+	10100: Q=>-20, N=>269
+	10101: Q=>-8, N=>1222
+	10110: Q=>-21, N=>395
+	10111: Q=>-2, N=>3
+	11000: Q=>-2, N=>3
+	11010: Q=>-9, N=>36
+	11011: Q=>136, N=>4840
+	11101: Q=>-10, N=>1142
+	11110: Q=>137, N=>4874
+Best Action: 00110
+Sent the following message to the server: 00110
+Received the following message from the server: ACK_PIECE: 00110
+Received the following message from the server: MOVE: 3,1
+-----------------------------------
+11100  null   01000  null   01101  
+01010  null   null   00000  10000  
+00100  null   00011  null   00010  
+11001  00110  null   null   00001  
+null   null   11111  null   00111  
+-----------------------------------
+Received the following message from the server: Q2: 10010 (please select move)
+Root: Q=>887, N=>31549
+	0,1: Q=>-2, N=>3
+	0,3: Q=>129, N=>5348
+	1,1: Q=>-24, N=>574
+	1,2: Q=>-24, N=>528
+	2,1: Q=>-2, N=>3
+	2,3: Q=>59, N=>3579
+	3,2: Q=>-2, N=>3
+	3,3: Q=>88, N=>4331
+	4,0: Q=>691, N=>16918
+	4,1: Q=>-22, N=>263
+	4,3: Q=>-4, N=>9
+Best Action: 4,0
+Sent the following message to the server: 4,0
+Received the following message from the server: ACK_MOVE: 4,0
+-----------------------------------
+11100  null   01000  null   01101  
+01010  null   null   00000  10000  
+00100  null   00011  null   00010  
+11001  00110  null   null   00001  
+10010  null   11111  null   00111  
+-----------------------------------
+Received the following message from the server: Q1: Please choose piece for player 2
+Root: Q=>-1839, N=>34643
+	00101: Q=>-12, N=>79
+	01001: Q=>217, N=>4373
+	01011: Q=>431, N=>7352
+	01100: Q=>-1, N=>2
+	01110: Q=>684, N=>10633
+	01111: Q=>-1, N=>2
+	10001: Q=>69, N=>2097
+	10011: Q=>-1, N=>2
+	10100: Q=>-8, N=>34
+	10101: Q=>-3, N=>6
+	10110: Q=>362, N=>6415
+	10111: Q=>102, N=>2635
+	11000: Q=>-1, N=>2
+	11010: Q=>-1, N=>2
+	11011: Q=>10, N=>999
+	11101: Q=>-7, N=>24
+	11110: Q=>-1, N=>2
+Best Action: 01110
+Sent the following message to the server: 01110
+Received the following message from the server: ACK_PIECE: 01110
+Received the following message from the server: MOVE: 2,1
+-----------------------------------
+11100  null   01000  null   01101  
+01010  null   null   00000  10000  
+00100  01110  00011  null   00010  
+11001  00110  null   null   00001  
+10010  null   11111  null   00111  
+-----------------------------------
+Received the following message from the server: Q2: 10100 (please select move)
+Root: Q=>979, N=>38124
+	0,1: Q=>-16, N=>94
+	0,3: Q=>-16, N=>1844
+	1,1: Q=>-2, N=>3
+	1,2: Q=>-24, N=>1383
+	2,3: Q=>-2, N=>3
+	3,2: Q=>-2, N=>3
+	3,3: Q=>-20, N=>1585
+	4,1: Q=>633, N=>18832
+	4,3: Q=>428, N=>14385
+Best Action: 4,1
+Sent the following message to the server: 4,1
+Received the following message from the server: ACK_MOVE: 4,1
+-----------------------------------
+11100  null   01000  null   01101  
+01010  null   null   00000  10000  
+00100  01110  00011  null   00010  
+11001  00110  null   null   00001  
+10010  10100  11111  null   00111  
+-----------------------------------
+Received the following message from the server: Q1: Please choose piece for player 2
+Root: Q=>-3911, N=>44540
+	00101: Q=>-1, N=>2
+	01001: Q=>-9, N=>221
+	01011: Q=>-1, N=>2
+	01100: Q=>-10, N=>168
+	01111: Q=>-10, N=>140
+	10001: Q=>-1, N=>2
+	10011: Q=>-3, N=>6
+	10101: Q=>133, N=>2234
+	10110: Q=>348, N=>4612
+	10111: Q=>586, N=>7062
+	11000: Q=>2561, N=>25747
+	11010: Q=>-1, N=>2
+	11011: Q=>-1, N=>2
+	11101: Q=>323, N=>4347
+	11110: Q=>-3, N=>7
+Best Action: 11000
+Sent the following message to the server: 11000
+Received the following message from the server: ACK_PIECE: 11000
+Received the following message from the server: MOVE: 3,3
+-----------------------------------
+11100  null   01000  null   01101  
+01010  null   null   00000  10000  
+00100  01110  00011  null   00010  
+11001  00110  null   11000  00001  
+10010  10100  11111  null   00111  
+-----------------------------------
+Received the following message from the server: Q2: 10001 (please select move)
+Root: Q=>4131, N=>43108
+	0,1: Q=>-1, N=>2
+	0,3: Q=>-1, N=>2
+	1,1: Q=>-11, N=>202
+	1,2: Q=>-1, N=>2
+	2,3: Q=>4123, N=>41984
+	3,2: Q=>-1, N=>2
+	4,3: Q=>23, N=>920
+Best Action: 2,3
+Sent the following message to the server: 2,3
+Received the following message from the server: ACK_MOVE: 2,3
+-----------------------------------
+11100  null   01000  null   01101  
+01010  null   null   00000  10000  
+00100  01110  00011  10001  00010  
+11001  00110  null   11000  00001  
+10010  10100  11111  null   00111  
+-----------------------------------
+Received the following message from the server: Q1: Please choose piece for player 2
+Root: Q=>-5216, N=>52692
+	00101: Q=>-1, N=>2
+	01001: Q=>361, N=>4110
+	01011: Q=>536, N=>5711
+	01100: Q=>-1, N=>2
+	01111: Q=>1124, N=>10848
+	10011: Q=>4, N=>406
+	10101: Q=>1045, N=>9576
+	10110: Q=>461, N=>5027
+	10111: Q=>-6, N=>200
+	11010: Q=>336, N=>3882
+	11011: Q=>-7, N=>37
+	11101: Q=>-1, N=>2
+	11110: Q=>1365, N=>12901
+Best Action: 10101
+Sent the following message to the server: 10101
+Received the following message from the server: ACK_PIECE: 10101
+Received the following message from the server: MOVE: 4,3
+-----------------------------------
+11100  null   01000  null   01101  
+01010  null   null   00000  10000  
+00100  01110  00011  10001  00010  
+11001  00110  null   11000  00001  
+10010  10100  11111  10101  00111  
+-----------------------------------
+Received the following message from the server: Q2: 01011 (please select move)
+Root: Q=>3780, N=>62398
+	0,1: Q=>-9, N=>1338
+	0,3: Q=>2280, N=>44023
+	1,1: Q=>-10, N=>44
+	1,2: Q=>-2, N=>3
+	3,2: Q=>1521, N=>16994
+Best Action: 3,2
+Sent the following message to the server: 3,2
+Received the following message from the server: ACK_MOVE: 3,2
+-----------------------------------
+11100  null   01000  null   01101  
+01010  null   null   00000  10000  
+00100  01110  00011  10001  00010  
+11001  00110  01011  11000  00001  
+10010  10100  11111  10101  00111  
+-----------------------------------
+Received the following message from the server: Q1: Please choose piece for player 2
+Root: Q=>-17295, N=>77419
+	00101: Q=>-2, N=>5
+	01001: Q=>-2, N=>6
+	01100: Q=>2, N=>100
+	01111: Q=>-1, N=>2
+	10011: Q=>-3, N=>13
+	10110: Q=>7877, N=>35416
+	10111: Q=>-1, N=>2
+	11010: Q=>9428, N=>41879
+	11011: Q=>-1, N=>2
+	11101: Q=>-1, N=>2
+	11110: Q=>-1, N=>2
+Best Action: 11010
+Sent the following message to the server: 11010
+Received the following message from the server: ACK_PIECE: 11010
+Received the following message from the server: MOVE: 0,1
+-----------------------------------
+11100  11010  01000  null   01101  
+01010  null   null   00000  10000  
+00100  01110  00011  10001  00010  
+11001  00110  01011  11000  00001  
+10010  10100  11111  10101  00111  
+-----------------------------------
+Received the following message from the server: Q2: 10011 (please select move)
+Root: Q=>2153, N=>84667
+	0,3: Q=>2173, N=>84596
+	1,1: Q=>-14, N=>59
+	1,2: Q=>-6, N=>14
+Best Action: 0,3
+Sent the following message to the server: 0,3
+Received the following message from the server: ACK_MOVE: 0,3
+-----------------------------------
+11100  11010  01000  10011  01101  
+01010  null   null   00000  10000  
+00100  01110  00011  10001  00010  
+11001  00110  01011  11000  00001  
+10010  10100  11111  10101  00111  
+-----------------------------------
+Received the following message from the server: Q1: Please choose piece for player 2
+Root: Q=>-37099, N=>118943
+	00101: Q=>68, N=>346
+	01001: Q=>16150, N=>51645
+	01100: Q=>-1, N=>2
+	01111: Q=>74, N=>370
+	10110: Q=>-1, N=>3
+	10111: Q=>67, N=>342
+	11011: Q=>20659, N=>65832
+	11101: Q=>84, N=>409
+	11110: Q=>-1, N=>2
+Best Action: 11011
+Sent the following message to the server: 11011
+Received the following message from the server: ACK_PIECE: 11011
+Received the following message from the server: MOVE: 1,1
+-----------------------------------
+11100  11010  01000  10011  01101  
+01010  11011  null   00000  10000  
+00100  01110  00011  10001  00010  
+11001  00110  01011  11000  00001  
+10010  10100  11111  10101  00111  
+-----------------------------------
+Received the following message from the server: Q2: 00101 (please select move)
+Root: Q=>0, N=>286659033
+	1,2: Q=>0, N=>286659033
+Best Action: 1,2
+Sent the following message to the server: 1,2
+Received the following message from the server: ACK_MOVE: 1,2
+-----------------------------------
+11100  11010  01000  10011  01101  
+01010  11011  00101  00000  10000  
+00100  01110  00011  10001  00010  
+11001  00110  01011  11000  00001  
+10010  10100  11111  10101  00111  
+-----------------------------------
+Received the following message from the server: GAME_OVER: Game is a draw
+GAME_OVER: Game is a draw 

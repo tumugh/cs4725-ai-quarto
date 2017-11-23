@@ -27,7 +27,7 @@ class Node {
 	}
 	
 	public int getN() {
-		return n;
+		return this.n;
 	}
 	
 	public void setN(int n) {
@@ -78,10 +78,14 @@ class Node {
 class SelectPieceNode extends Node {
 	public SelectPieceNode(QuartoBoard board) {
 		super(board);
-		int[] moves = MonteCarlo.getPossiblePieces(board);
-		for (int i = 0 ; i < moves.length ; i++) {
-			String move = String.format("%5s", Integer.toBinaryString(moves[i])).replace(' ', '0');
-			this.remainingMoves.add(move);
+		ArrayList<Integer> moves = MonteCarlo.getPossiblePieces(board);
+		if (moves.size() == 32) {
+			this.remainingMoves.add("00000");
+			return;
+		}
+		for (Integer move: moves) {
+			String action = String.format("%5s", Integer.toBinaryString(move)).replace(' ', '0');
+			this.remainingMoves.add(action);
 		}
 	}	
 	
@@ -95,10 +99,27 @@ class SelectMoveNode extends Node {
 	
 	public SelectMoveNode(QuartoBoard board) {
 		super(board);
-		int[][] moves = MonteCarlo.getPossibleMoves(board); //new int[][]{{0,0}, {0,2}, {0,1}, {0,3}, {1,1}, {1,2}, {2,2}};
-		for (int i = 0 ; i < moves.length ; i++) {
-			String move = moves[i][0]+","+moves[i][1];
-			this.remainingMoves.add(move);
+		ArrayList<int[]> movesList = MonteCarlo.getPossibleMoves(board); 
+		if (movesList.size() == 25) {
+			this.remainingMoves.add("2,2");
+			return;
+		}
+		for (int[] move : movesList) {
+			String action = move[0] + "," + move[1];
+			this.remainingMoves.add(action);
+		}
+	}
+	
+	public SelectMoveNode(QuartoBoard board, Integer piece) {
+		super(board);
+		ArrayList<int[]> movesList = MonteCarlo.getPossibleMoves(board, piece);
+		if (movesList.size() == 25) {
+			this.remainingMoves.add("2,2");
+			return;
+		}
+		for (int[] move : movesList) {
+			String action = move[0] + "," + move[1];
+			this.remainingMoves.add(action);
 		}
 	}
 	
