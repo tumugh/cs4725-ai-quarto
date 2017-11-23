@@ -64,23 +64,8 @@ public class QuartoServer {
 			//print state of game
 			this.quartoBoard.printBoardState();
 
-
-try {
-        System.in.read();
-    } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
 			//Get player 2 to choose player 1's piece
 			pieceID = this.choosePiece(playerOne, playerTwo);
-
-
-try {
-        System.in.read();
-    } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
 
 			//get player 1 to make his/her move with the piece given to him/her
 			move = this.chooseMove(playerOne, playerTwo, pieceID);

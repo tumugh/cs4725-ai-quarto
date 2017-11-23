@@ -1,7 +1,7 @@
-public class QuartoCarloAgent extends QuartoAgent {
+public class SymmetryQuartoCarloAgent extends QuartoAgent {
 
     //Example AI
-    public QuartoCarloAgent(GameClient gameClient, String stateFileName) {
+    public SymmetryQuartoCarloAgent(GameClient gameClient, String stateFileName) {
         // because super calls one of the super class constructors(you can overload constructors), you need to pass the parameters required.
         super(gameClient, stateFileName);
     }
@@ -25,7 +25,7 @@ public class QuartoCarloAgent extends QuartoAgent {
         }
 
         gameClient.connectToServer(ip, 4321);
-        QuartoCarloAgent quartoAgent = new QuartoCarloAgent(gameClient, stateFileName);
+        SymmetryQuartoCarloAgent quartoAgent = new SymmetryQuartoCarloAgent(gameClient, stateFileName);
         quartoAgent.play();
 
         gameClient.closeConnection();
@@ -36,7 +36,7 @@ public class QuartoCarloAgent extends QuartoAgent {
 	 */
     @Override
     protected String pieceSelectionAlgorithm() {	
-		 MonteCarlo mc = new MonteCarlo(this.timeLimitForResponse-1000, 1 / Math.sqrt(2), false);
+		 MonteCarlo mc = new MonteCarlo(this.timeLimitForResponse-1000, 1 / Math.sqrt(2), true);
 		 String bestAction = mc.UCTSearch(this.quartoBoard, null);
 		 return bestAction; 
     }
@@ -47,7 +47,7 @@ public class QuartoCarloAgent extends QuartoAgent {
      */
     @Override
     protected String moveSelectionAlgorithm(int pieceID) { 
-		 MonteCarlo mc = new MonteCarlo(this.timeLimitForResponse-1000, 1 / Math.sqrt(2), false);
+		 MonteCarlo mc = new MonteCarlo(this.timeLimitForResponse-1000, 1 / Math.sqrt(2), true);
 		 String bestAction = mc.UCTSearch(this.quartoBoard, pieceID);
 		 return bestAction; 
     }
