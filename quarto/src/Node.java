@@ -112,10 +112,14 @@ class SelectMoveNode extends Node {
 	
 	public SelectMoveNode(QuartoBoard board, Integer piece) {
 		super(board);
-		int[][] moves = MonteCarlo.getPossibleMoves(board, piece); //new int[][]{{0,0}, {0,2}, {0,1}, {0,3}, {1,1}, {1,2}, {2,2}};
-		for (int i = 0 ; i < moves.length ; i++) {
-			String move = moves[i][0] + "," + moves[i][1];
-			this.remainingMoves.add(move);
+		ArrayList<int[]> movesList = MonteCarlo.getPossibleMoves(board, piece);
+		if (movesList.size() == 25) {
+			this.remainingMoves.add("2,2");
+			return;
+		}
+		for (int[] move : movesList) {
+			String action = move[0] + "," + move[1];
+			this.remainingMoves.add(action);
 		}
 	}
 	

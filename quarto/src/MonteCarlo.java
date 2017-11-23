@@ -11,10 +11,12 @@ public class MonteCarlo {
 
 	private int timeLimit;
 	private double cp;
+	private boolean symmetry;
 
-	public MonteCarlo(int timeLimit, double cp) {
+	public MonteCarlo(int timeLimit, double cp, boolean symmetry) {
 		this.timeLimit = timeLimit;
 		this.cp = cp;
+		this.symmetry = symmetry;
 	}
 
 	/*
@@ -32,7 +34,11 @@ public class MonteCarlo {
 		if (piece == null) {
 			root = new SelectPieceNode(board);
 		} else {
-			root = new SelectMoveNode(board);
+			if (symmetry) {
+				root = new SelectMoveNode(board, piece);
+			} else {
+				root = new SelectMoveNode(board);
+			}
 			((SelectMoveNode) root).setAction(piece);
 		}
 
@@ -103,8 +109,12 @@ public class MonteCarlo {
 		
 		String action = node.getRemainingMoves().get(0);
 		if (node instanceof SelectPieceNode) {
-			//int pieceId = parsePiece(action);
-			child = new SelectMoveNode(node.getBoard());
+			if (symmetry) {
+				int pieceId = parsePiece(action);
+				child = new SelectMoveNode(node.getBoard(), pieceId);				
+			} else {
+				child = new SelectMoveNode(node.getBoard());
+			}
 		} else {
 			QuartoBoard copyBoard = new QuartoBoard(node.getBoard());
 			int piece = parsePiece(node.getAction());
@@ -341,10 +351,11 @@ public class MonteCarlo {
 				}
 			}
 		}
+		
 		return movesList;
 	}
 	
-	public static int[][] getPossibleMoves(QuartoBoard board, Integer piece) {
+	public static ArrayList<int[]> getPossibleMoves(QuartoBoard board, Integer piece) {
 		ArrayList<int[]> movesList = new ArrayList<int[]>();
 		ArrayList<QuartoBoard> boardSet = new ArrayList<QuartoBoard>();
 		
@@ -372,17 +383,8 @@ public class MonteCarlo {
 				}
 			}
 		}
-		
-		Object[] movesObjects = movesList.toArray();
 
-		int[][] moves = new int[movesObjects.length][2];
-
-		for (int i = 1; i < movesObjects.length; i++) {
-			moves[i][0] = ((int[]) movesObjects[i])[0];
-			moves[i][1] = ((int[]) movesObjects[i])[1];
-		}
-
-		return moves;
+		return movesList;
 	}
 	
 	public static boolean areEqualBoards(QuartoBoard b1, QuartoBoard b2) {
@@ -409,13 +411,10 @@ public class MonteCarlo {
 	
 	public static ArrayList<QuartoBoard> findSymmetricBoards(QuartoBoard board) {
 		ArrayList<QuartoBoard> symBoards = new ArrayList<QuartoBoard>();
-		QuartoBoard b1 = rotateBoard(board);
-		QuartoBoard b2 = rotateBoard(b1);
-		QuartoBoard b3 = rotateBoard(b2);
 		symBoards.add(board);
-		symBoards.add(b1);
-		symBoards.add(b2);
-		symBoards.add(b3);
+		symBoards.addAll(getRotatedBoards(board));
+		symBoards.addAll(getMirroredBoards(board));
+		
 		return symBoards;
 	}
 	
@@ -431,29 +430,85 @@ public class MonteCarlo {
 		return copyBoard;
 	}
 	
+	public static ArrayList<QuartoBoard> getRotatedBoards(QuartoBoard board) {
+		ArrayList<QuartoBoard> rotatedBoards = new ArrayList<QuartoBoard>();
+		QuartoBoard b1 = rotateBoard(board);
+		QuartoBoard b2 = rotateBoard(b1);
+		QuartoBoard b3 = rotateBoard(b2);
+		rotatedBoards.add(b1);
+		rotatedBoards.add(b2);
+		rotatedBoards.add(b3);
+		return rotatedBoards;
+	}
+	
+	public static QuartoBoard transposeBoard(QuartoBoard board) {
+		QuartoBoard copyBoard = new QuartoBoard(board);
+		
+		for(int i = 0; i < board.getNumberOfRows(); i++) {
+			for(int j = 0; j < board.getNumberOfColumns(); j++) {
+				copyBoard.board[i][j] = board.board[j][i];
+			}
+		}
+		
+		return copyBoard;
+	}
+	
+	public static ArrayList<QuartoBoard> getMirroredBoards(QuartoBoard board) {
+		ArrayList<QuartoBoard> mirroredBoards = new ArrayList<QuartoBoard>();
+	
+		QuartoPiece tempPiece;
+		QuartoBoard yMirror = new QuartoBoard(board);
+		QuartoBoard xMirror = new QuartoBoard(board);
+		for (int i = 0; i < board.getNumberOfRows(); i++) {
+		    for (int j = 0; j < board.getNumberOfColumns() / 2; j++) {
+		    	tempPiece = yMirror.board[i][j];
+		    	yMirror.board[i][j] = yMirror.board[i][board.getNumberOfColumns() - 1 - j];
+		    	yMirror.board[i][board.getNumberOfColumns() - 1 - j] = tempPiece;
+
+		    	tempPiece = xMirror.board[j][i];
+		        xMirror.board[j][i] = xMirror.board[board.getNumberOfRows() - 1 - j][i];
+		        xMirror.board[board.getNumberOfRows() - 1 - j][i] = tempPiece;
+		    }
+		}
+		
+		QuartoBoard transpose = transposeBoard(board);
+		
+		QuartoBoard diag = rotateBoard(board);
+		diag = rotateBoard(diag);
+		diag = transposeBoard(diag);
+			
+		mirroredBoards.add(yMirror);
+		mirroredBoards.add(xMirror);
+		mirroredBoards.add(transpose);
+		mirroredBoards.add(diag);
+		
+		return mirroredBoards;
+	}
+	
 	public static void main(String[] args) {
 		 QuartoBoard board = new QuartoBoard(5,5,32, null);
-		 board.board[0][1] = new QuartoPiece(1);
-		 board.board[0][2] = new QuartoPiece(2);
-		 board.board[0][3] = new QuartoPiece(3);
-		 board.board[0][4] = new QuartoPiece(4);
-		 
-//		 Set<QuartoBoard> set = findSymmetricBoards(board);
+		 board.board[0][0] = new QuartoPiece(1);
+//		 board.board[0][4] = new QuartoPiece(4);
+//		 board.board[0][2] = new QuartoPiece(2);
+//		 board.board[0][3] = new QuartoPiece(3);
+//		 
+//		 board.printBoardState();
+//		 ArrayList<QuartoBoard> set = getMirroredBoards(board);
 //		 for (QuartoBoard symboard : set) {
 //			 symboard.printBoardState();
 //		 }
-//		 
-//		 int[][] moves = getPossibleMoves(board, 3);
-//		 
-//		 for (int i = 0 ; i < moves.length ; i++) {
-//			String move = moves[i][0] + "," + moves[i][1];
-//			System.out.println(move);
-//		 }
 		 
-		 MonteCarlo mc = new MonteCarlo(9000, 1 / Math.sqrt(2));
-		
-		 String bestAction = mc.UCTSearch(board, null);
-		
-		 System.out.println(bestAction); 
+		 ArrayList<int[]> moves = getPossibleMoves(board, 3);
+		 
+		 for (int[] move : moves) {
+		 	String action = move[0] + "," + move[1];
+	 		System.out.println(action);
+		 }
+		 
+//		 MonteCarlo mc = new MonteCarlo(9000, 1 / Math.sqrt(2));
+//		
+//		 String bestAction = mc.UCTSearch(board, null);
+//		
+//		 System.out.println(bestAction); 
 	}
 }
