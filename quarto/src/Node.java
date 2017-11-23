@@ -20,7 +20,6 @@ class Node {
 		this.remainingMoves = new ArrayList<String>();
 		this.board = board;
 		this.player = true;
-		this.n = 1;
 	}
 	
 	public QuartoBoard getBoard() {
@@ -80,6 +79,10 @@ class SelectPieceNode extends Node {
 	public SelectPieceNode(QuartoBoard board) {
 		super(board);
 		ArrayList<Integer> moves = MonteCarlo.getPossiblePieces(board);
+		if (moves.size() == 32) {
+			this.remainingMoves.add("00000");
+			return;
+		}
 		for (Integer move: moves) {
 			String action = String.format("%5s", Integer.toBinaryString(move)).replace(' ', '0');
 			this.remainingMoves.add(action);
@@ -96,7 +99,11 @@ class SelectMoveNode extends Node {
 	
 	public SelectMoveNode(QuartoBoard board) {
 		super(board);
-		ArrayList<int[]> movesList = MonteCarlo.getPossibleMoves(board); //new int[][]{{0,0}, {0,2}, {0,1}, {0,3}, {1,1}, {1,2}, {2,2}};
+		ArrayList<int[]> movesList = MonteCarlo.getPossibleMoves(board); 
+		if (movesList.size() == 25) {
+			this.remainingMoves.add("2,2");
+			return;
+		}
 		for (int[] move : movesList) {
 			String action = move[0] + "," + move[1];
 			this.remainingMoves.add(action);

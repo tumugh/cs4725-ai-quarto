@@ -136,13 +136,13 @@ public class MonteCarlo {
 	private Node argmax(Node node, double delta) {
 		ArrayList<Node> children = node.getChildren();
 		
-		double maxValue = evaluate(children.get(0), delta);
+		double maxValue = evaluate(children.get(0), node.getN(), delta);
 		Node maxNode = children.get(0);
 		
 		for (int i = 1; i < children.size() ; i++) {
 			Node child = children.get(i);
 			
-			double value = evaluate(child, delta);
+			double value = evaluate(child, node.getN(), delta);
 			
 			if (value > maxValue) {
 				maxValue = value;
@@ -166,8 +166,8 @@ public class MonteCarlo {
 	/*
 	 * BestChild equation from paper
 	 */
-	private double evaluate(Node node, double delta) {
-		return (double)node.getQ() / node.getN() + delta*Math.sqrt(2*Math.log(node.getN()) / node.getN());
+	private double evaluate(Node node, int simulations, double delta) {
+		return (double)node.getQ() / node.getN() + delta*Math.sqrt(2*Math.log(simulations) / node.getN());
 	}
 
 	/*
