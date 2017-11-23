@@ -113,7 +113,7 @@ class SelectMoveNode extends Node {
 	public SelectMoveNode(QuartoBoard board, Integer piece) {
 		super(board);
 		ArrayList<int[]> movesList = MonteCarlo.getPossibleMoves(board, piece);
-		if (movesList.size() == 25) {
+		if (movesList.size() == 7) {
 			this.remainingMoves.add("2,2");
 			return;
 		}

@@ -519,7 +519,7 @@ public class MonteCarlo {
 //		 board.board[0][2] = new QuartoPiece(2);
 //		 board.board[0][3] = new QuartoPiece(3);
 //		 
-//		 board.printBoardState();
+		 board.printBoardState();
 //		 ArrayList<QuartoBoard> set = getMirroredBoards(board);
 //		 for (QuartoBoard symboard : set) {
 //			 symboard.printBoardState();
