@@ -98,6 +98,7 @@ public class MonteCarlo {
 //		if (node.getRemainingMoves().size() != 0)
 //			return expand(node);
 //		return bestChild(node, this.cp);
+		
 	}
 
 	/*
@@ -169,6 +170,7 @@ public class MonteCarlo {
 	private void printTree(String name, Node node) {
 		System.out.println(name+ ": Q=>"+node.getQ()+", N=>"+node.getN());
 		ArrayList<Node> children = node.getChildren();
+
 		for (Node child : children) {
 			System.out.println("\t"+child.getAction() + ": Q=>"+child.getQ()+", N=>"+child.getN());
 		}
@@ -187,6 +189,7 @@ public class MonteCarlo {
 	/*
 	 *  return score from randomly simulated game
 	 */
+
 	private int defaultPolicy(Node child, QuartoBoard board, Boolean player1) {
 		QuartoBoard copyBoard = new QuartoBoard(board);
 		int score;
@@ -438,7 +441,6 @@ public class MonteCarlo {
 				copyBoard.board[i][board.getNumberOfColumns() - j - 1] = board.board[j][i];
 			}
 		}
-		
 		return copyBoard;
 	}
 	
@@ -495,6 +497,7 @@ public class MonteCarlo {
 	
 	public static void main(String[] args) {
 		 QuartoBoard board = new QuartoBoard(5,5,32, null);
+
 		 board.board[0][0] = new QuartoPiece(0);
 		 board.board[1][1] = new QuartoPiece(2);
 		 board.board[2][2] = new QuartoPiece(3);
@@ -511,6 +514,7 @@ public class MonteCarlo {
 //		 board.board[2][3] = new QuartoPiece(14);
 //		 board.board[2][4] = new QuartoPiece(15);
 
+
 //		 board.board[0][4] = new QuartoPiece(4);
 //		 board.board[0][2] = new QuartoPiece(2);
 //		 board.board[0][3] = new QuartoPiece(3);
@@ -521,6 +525,7 @@ public class MonteCarlo {
 //			 symboard.printBoardState();
 //		 }
 		 
+
 //		 ArrayList<int[]> moves = getPossibleMoves(board, 3);
 //		 
 //		 for (int[] move : moves) {
