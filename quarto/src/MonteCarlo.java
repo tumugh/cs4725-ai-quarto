@@ -456,18 +456,14 @@ public class MonteCarlo {
 	public static ArrayList<QuartoBoard> getMirroredBoards(QuartoBoard board) {
 		ArrayList<QuartoBoard> mirroredBoards = new ArrayList<QuartoBoard>();
 	
-		QuartoPiece tempPiece;
 		QuartoBoard yMirror = new QuartoBoard(board);
 		QuartoBoard xMirror = new QuartoBoard(board);
 		for (int i = 0; i < board.getNumberOfRows(); i++) {
 		    for (int j = 0; j < board.getNumberOfColumns() / 2; j++) {
-		    	tempPiece = yMirror.board[i][j];
 		    	yMirror.board[i][j] = yMirror.board[i][board.getNumberOfColumns() - 1 - j];
-		    	yMirror.board[i][board.getNumberOfColumns() - 1 - j] = tempPiece;
-
-		    	tempPiece = xMirror.board[j][i];
+		    	yMirror.board[i][board.getNumberOfColumns() - 1 - j] = board.board[i][j];;
 		        xMirror.board[j][i] = xMirror.board[board.getNumberOfRows() - 1 - j][i];
-		        xMirror.board[board.getNumberOfRows() - 1 - j][i] = tempPiece;
+		        xMirror.board[board.getNumberOfRows() - 1 - j][i] = board.board[j][i];;
 		    }
 		}
 		
@@ -488,6 +484,21 @@ public class MonteCarlo {
 	public static void main(String[] args) {
 		 QuartoBoard board = new QuartoBoard(5,5,32, null);
 		 board.board[0][0] = new QuartoPiece(1);
+		 board.board[0][1] = new QuartoPiece(2);
+		 board.board[0][2] = new QuartoPiece(25);
+		 board.board[0][3] = new QuartoPiece(4);
+		 board.board[0][4] = new QuartoPiece(5);
+		 board.board[1][0] = new QuartoPiece(6);
+		 board.board[1][1] = new QuartoPiece(7);
+		 board.board[1][2] = new QuartoPiece(8);
+		 board.board[1][3] = new QuartoPiece(9);
+		 board.board[1][4] = new QuartoPiece(10);
+		 board.board[2][0] = new QuartoPiece(11);
+		 board.board[2][1] = new QuartoPiece(12);
+		 board.board[2][2] = new QuartoPiece(13);
+		 board.board[2][3] = new QuartoPiece(14);
+		 board.board[2][4] = new QuartoPiece(15);
+
 //		 board.board[0][4] = new QuartoPiece(4);
 //		 board.board[0][2] = new QuartoPiece(2);
 //		 board.board[0][3] = new QuartoPiece(3);
