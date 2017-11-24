@@ -189,7 +189,6 @@ public class MonteCarlo {
 	/*
 	 *  return score from randomly simulated game
 	 */
-
 	private int defaultPolicy(Node child, QuartoBoard board, Boolean player1) {
 		QuartoBoard copyBoard = new QuartoBoard(board);
 		int score;
@@ -197,13 +196,13 @@ public class MonteCarlo {
 		
 		if (child instanceof SelectMoveNode) {
 			piece = parsePiece(child.getAction());
-			score = playGame(copyBoard, piece, true);
+			score = playGame(copyBoard, piece, player1);
 		} else if (child instanceof SelectPieceNode){
 			int[] move = parseMove(child.getAction());
 			piece = parsePiece(child.getParentNode().getAction());
 			copyBoard.insertPieceOnBoard(move[0], move[1], piece);
 			piece = randomPieceSelection(copyBoard);
-			score = playGame(copyBoard, piece, false); 
+			score = playGame(copyBoard, piece, !player1); 
 		} else {
 			score = ((TerminatingNode) child).getValue();
 		}
@@ -496,29 +495,8 @@ public class MonteCarlo {
 	}
 	
 	public static void main(String[] args) {
-		 QuartoBoard board = new QuartoBoard(5,5,32, null);
-
-		 board.board[0][0] = new QuartoPiece(0);
-		 board.board[1][1] = new QuartoPiece(2);
-		 board.board[2][2] = new QuartoPiece(3);
-		 board.board[3][3] = new QuartoPiece(4);
-//		 board.board[0][4] = new QuartoPiece(5);
-//		 board.board[1][0] = new QuartoPiece(6);
-//		 board.board[1][1] = new QuartoPiece(7);
-//		 board.board[1][2] = new QuartoPiece(8);
-//		 board.board[1][3] = new QuartoPiece(9);
-//		 board.board[1][4] = new QuartoPiece(10);
-//		 board.board[2][0] = new QuartoPiece(11);
-//		 board.board[2][1] = new QuartoPiece(12);
-//		 board.board[2][2] = new QuartoPiece(13);
-//		 board.board[2][3] = new QuartoPiece(14);
-//		 board.board[2][4] = new QuartoPiece(15);
-
-
-//		 board.board[0][4] = new QuartoPiece(4);
-//		 board.board[0][2] = new QuartoPiece(2);
-//		 board.board[0][3] = new QuartoPiece(3);
-//		 
+		 QuartoBoard board = new QuartoBoard(5,5,32, "state.quarto");
+	 
 		 board.printBoardState();
 //		 ArrayList<QuartoBoard> set = getMirroredBoards(board);
 //		 for (QuartoBoard symboard : set) {
