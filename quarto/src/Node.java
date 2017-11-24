@@ -112,14 +112,15 @@ class SelectMoveNode extends Node {
 	
 	public SelectMoveNode(QuartoBoard board, Integer piece) {
 		super(board);
-		ArrayList<int[]> movesList = MonteCarlo.getPossibleMoves(board, piece);
-		if (movesList.size() == 7) {
+		if (isEmptyBoard(this.getBoard())) {
 			this.remainingMoves.add("2,2");
 			return;
-		}
-		for (int[] move : movesList) {
-			String action = move[0] + "," + move[1];
-			this.remainingMoves.add(action);
+		} else {
+			ArrayList<int[]> movesList = MonteCarlo.getPossibleMoves(board, piece);
+			for (int[] move : movesList) {
+				String action = move[0] + "," + move[1];
+				this.remainingMoves.add(action);
+			}
 		}
 	}
 	
@@ -127,6 +128,19 @@ class SelectMoveNode extends Node {
 		String action = String.format("%5s", Integer.toBinaryString(piece)).replace(' ', '0');
 		super.setAction(action);
 	}
+	
+	public static boolean isEmptyBoard(QuartoBoard board) {
+    	for (int row = 0; row < board.getNumberOfRows(); row++) {
+			for (int col = 0; col < board.getNumberOfColumns(); col++) {
+				if (board.isSpaceTaken(row, col)) {
+					return false;
+				}
+			}
+		}
+    	
+    	return true;
+    }
+	
 }
 
 class TerminatingNode extends Node {

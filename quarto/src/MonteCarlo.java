@@ -548,9 +548,9 @@ public class MonteCarlo {
 	}
 	
 	public static void main(String[] args) {
-//		 QuartoBoard board = new QuartoBoard(5,5,32, "state.quarto");
-		 QuartoBoard board = new QuartoBoard(5,5,32, null);
-		 board.board[3][4] = new QuartoPiece(0);
+		 QuartoBoard board = new QuartoBoard(5,5,32, "state.quarto");
+//		 QuartoBoard board = new QuartoBoard(5,5,32, null);
+//		 board.board[3][4] = new QuartoPiece(0);
 		 
 		 board.printBoardState();
 //		 ArrayList<QuartoBoard> set = getMirroredBoards(board);
@@ -559,17 +559,17 @@ public class MonteCarlo {
 //		 }
 		 
 //
-		 ArrayList<int[]> moves = getPossibleMoves(board, 3);
+//		 ArrayList<int[]> moves = getPossibleMoves(board, 3);
+//		 
+//		 for (int[] move : moves) {
+//		 	String action = move[0] + "," + move[1];
+//	 		System.out.println(action);
+//		 }
 		 
-		 for (int[] move : moves) {
-		 	String action = move[0] + "," + move[1];
-	 		System.out.println(action);
-		 }
-		 
-//		 MonteCarlo mc = new MonteCarlo(9000, 1 / Math.sqrt(2), false);
-//		
-//		 String bestAction = mc.UCTSearch(board, null);
-//		
-//		 System.out.println(bestAction); 
+		 MonteCarlo mc = new MonteCarlo(9000, 1 / Math.sqrt(2), false);
+		
+		 String bestAction = mc.UCTSearch(board, null);
+		
+		 System.out.println(bestAction); 
 	}
 }
