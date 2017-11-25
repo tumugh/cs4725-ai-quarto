@@ -13,6 +13,7 @@ class Node {
 
 	protected Node parent;
 	
+	// True if node belongs to our agent, false otherwise
 	protected boolean player;
 	
 	public Node(QuartoBoard board) {
@@ -76,6 +77,8 @@ class Node {
 }
 
 class SelectPieceNode extends Node {
+	
+	// SelectPieceNode for non-symmetry agent
 	public SelectPieceNode(QuartoBoard board) {
 		super(board);
 		ArrayList<Integer> moves = MonteCarlo.getPossiblePieces(board);
@@ -89,6 +92,7 @@ class SelectPieceNode extends Node {
 		}
 	}	
 	
+	// Flip playing because the child of a SelectPieceNode is next player's SelectMoveNode
 	public void addChild(Node child, String action) {
 		super.addChild(child, action);
 		child.player = !child.parent.player;
@@ -97,9 +101,12 @@ class SelectPieceNode extends Node {
 
 class SelectMoveNode extends Node {
 	
+	// SelectMoveNode for non-symmetry agent
 	public SelectMoveNode(QuartoBoard board) {
 		super(board);
-		ArrayList<int[]> movesList = MonteCarlo.getPossibleMoves(board); 
+		ArrayList<int[]> movesList = MonteCarlo.getPossibleMoves(board);
+		// From playing against profs hard agent we noticed it's first move was always 2,2
+		// Ours seems to be random, so we hardcode this little "hack"
 		if (movesList.size() == 25) {
 			this.remainingMoves.add("2,2");
 			return;
@@ -110,8 +117,11 @@ class SelectMoveNode extends Node {
 		}
 	}
 	
+	// SelectMoveNode for symmetry agent
 	public SelectMoveNode(QuartoBoard board, Integer piece) {
 		super(board);
+		// From playing against profs hard agent we noticed it's first move was always 2,2
+		// Ours seems to be random, so we hardcode this little "hack"
 		if (isEmptyBoard(this.getBoard())) {
 			this.remainingMoves.add("2,2");
 			return;
@@ -149,7 +159,6 @@ class TerminatingNode extends Node {
 	public TerminatingNode(QuartoBoard board, int value) {
 		super(board);
 		this.value = value;
-	
 	}
 	
 	public void addChild(Node child) {
@@ -157,7 +166,6 @@ class TerminatingNode extends Node {
 		System.exit(-1);
 	}
 	
-	//return the value
 	public int getValue() {
 		return this.value;
 	}

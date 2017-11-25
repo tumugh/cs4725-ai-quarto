@@ -1,22 +1,19 @@
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
-/*
- * The UCT algorithm from http://mcts.ai/pubs/mcts-survey-master.pdf
- */
-		
+// UCT algorithm from http://mcts.ai/pubs/mcts-survey-master.pdf
 public class MonteCarlo {
 
+	// Computational limit
 	private int timeLimit;
+	// Exploration constant
 	private double cp;
+	// True if agent uses board symmetry for action selection, false otherwise
 	private boolean symmetry;
 
 	public MonteCarlo(int timeLimit, double cp, boolean symmetry) {
 		this.timeLimit = timeLimit;
 		this.cp = cp;
-		this.symmetry = symmetry; // to test with and without the symmetry implementation
+		this.symmetry = symmetry;
 	}
 
 	/*
@@ -39,8 +36,8 @@ public class MonteCarlo {
 			backup(child, score);
 		}
 
-		// print the statistics of the actions at the top level
-		printTree("Root", root);
+		printTree(root);
+		
 		return bestChild(root, 0).getAction();
 	}
 	
@@ -60,6 +57,7 @@ public class MonteCarlo {
 			}
 			((SelectMoveNode) root).setAction(piece);
 		}
+		
 		return root;
 	}
 	
@@ -91,14 +89,8 @@ public class MonteCarlo {
 				node = bestChild(node, this.cp);
 			}
 		}
+		
 		return node;
-		
-//		if (node instanceof TerminatingNode)
-//			return node;
-//		if (node.getRemainingMoves().size() != 0)
-//			return expand(node);
-//		return bestChild(node, this.cp);
-		
 	}
 
 	/*
@@ -149,7 +141,7 @@ public class MonteCarlo {
 	private Node bestChild(Node node, double delta) {
 		return argmax(node, delta);
 	}
-		
+	
 	private Node argmax(Node node, double delta) {
 		ArrayList<Node> children = node.getChildren();
 		
@@ -169,28 +161,24 @@ public class MonteCarlo {
 		return maxNode;
 	}
 	
-	private void printTree(String name, Node node) {
-		System.out.println(name+ ": Q=>"+node.getQ()+", N=>"+node.getN());
+	// Utility function for printing expected values and number of simulations at the top level
+	private void printTree(Node node) {
+		System.out.println("Root: Q=>"+node.getQ()+", N=>"+node.getN());
 		ArrayList<Node> children = node.getChildren();
 
 		for (Node child : children) {
 			System.out.println("\t"+child.getAction() + ": Q=>"+child.getQ()+", N=>"+child.getN());
 		}
-		if ("Root" == name) {
-			System.out.println("Best Action: " + bestChild(node, 0).getAction());
-		}
+		
+		System.out.println("Best Action: " + bestChild(node, 0).getAction());
 	}
 	
-	/*
-	 * BestChild equation from paper
-	 */
+	// BestChild equation from paper
 	private double evaluate(Node node, int simulations, double delta) {
 		return (double)node.getQ() / node.getN() + delta*Math.sqrt(2*Math.log(simulations) / node.getN());
 	}
 
-	/*
-	 *  return score from randomly simulated game
-	 */
+	// Return score from simulated game
 	private int defaultPolicy(Node child, QuartoBoard board, Boolean player1) {
 		QuartoBoard copyBoard = new QuartoBoard(board);
 		int score;
@@ -245,18 +233,20 @@ public class MonteCarlo {
 		return move;
 	}
 
-	public int playGame(QuartoBoard board, int startingPiece, Boolean player1) {
+	// Runs a simulated quarto game starting with making a move given a piece
+	public int playGame(QuartoBoard board, int startingPiece, Boolean ourPlayer) {
 
 		int piece = startingPiece;
 
 		while (true) {
 
+			// Was previously semiRandomMove
 			int[] move = randomMove(piece, board);
 
 			board.insertPieceOnBoard(move[0], move[1], piece);
 
 			if (isWin(board, move[0], move[1])) {
-				if (player1)
+				if (ourPlayer)
 					return 1;
 				return -1;
 			}
@@ -264,13 +254,15 @@ public class MonteCarlo {
 			if (board.checkIfBoardIsFull())
 				return 0;
 
+			// Was previously semiRandomPieceSelection
 			piece = randomPieceSelection(board);
 
 			// Switch payers
-			player1 = !player1;
+			ourPlayer = !ourPlayer;
 		}
 	}
 
+	// Determines if board is in winning state given move made on position row,col
 	protected Boolean isWin(QuartoBoard board, int row, int col) {
 		if (board.checkRow(row) || board.checkColumn(col)
 				|| board.checkDiagonals()) {
@@ -279,11 +271,16 @@ public class MonteCarlo {
 		return false;
 	}
 
+	// Used for piece selection during simulations
 	protected int randomPieceSelection(QuartoBoard board) {
 		QuartoBoard copyBoard = new QuartoBoard(board);
 		return copyBoard.chooseRandomPieceNotPlayed(100);
 	}
 
+	/* Dead code
+	 * We were using this for piece selection during simulations,
+	 * but we are now using random piece due to the performance hit.
+	 */
 	protected int semiRandomPieceSelection(QuartoBoard board) {
 		boolean skip = false;
 		for (int i = 0; i < board.getNumberOfPieces(); i++) {
@@ -316,6 +313,7 @@ public class MonteCarlo {
 		return copyBoard.chooseRandomPieceNotPlayed(100);
 	}
 
+	// Used for move selection during simulations
 	protected int[] randomMove(int pieceID, QuartoBoard board) {
 		int[] move = new int[2];
 		QuartoBoard copyBoard = new QuartoBoard(board);
@@ -324,6 +322,10 @@ public class MonteCarlo {
 		return move;
 	}
 
+	/* Dead code
+	 * We were using this for move selection during simulations,
+	 * but we are now using random moves due to the performance hit.
+	 */
 	protected int[] semiRandomMove(int pieceID, QuartoBoard board) {
 		int[] move = new int[2];
 		for (int row = 0; row < board.getNumberOfRows(); row++) {
@@ -552,28 +554,13 @@ public class MonteCarlo {
 	}
 	
 	public static void main(String[] args) {
-		 QuartoBoard board = new QuartoBoard(5,5,32, "state.quarto");
-//		 QuartoBoard board = new QuartoBoard(5,5,32, null);
-//		 board.board[3][4] = new QuartoPiece(0);
-		 
-		 board.printBoardState();
-//		 ArrayList<QuartoBoard> set = getMirroredBoards(board);
-//		 for (QuartoBoard symboard : set) {
-//			 symboard.printBoardState();
-//		 }
-		 
-//
-//		 ArrayList<int[]> moves = getPossibleMoves(board, 3);
-//		 
-//		 for (int[] move : moves) {
-//		 	String action = move[0] + "," + move[1];
-//	 		System.out.println(action);
-//		 }
-		 
-		 MonteCarlo mc = new MonteCarlo(9000, 1 / Math.sqrt(2), false);
+//		QuartoBoard board = new QuartoBoard(5,5,32, "state.quarto");
+		QuartoBoard board = new QuartoBoard(5,5,32, null);
 		
-		 String bestAction = mc.UCTSearch(board, null);
+		board.printBoardState();
 		
-		 System.out.println(bestAction); 
+		MonteCarlo mc = new MonteCarlo(9000, 1 / Math.sqrt(2), false);
+		String bestAction = mc.UCTSearch(board, 0);
+		System.out.println(bestAction);
 	}
 }
