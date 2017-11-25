@@ -1,5 +1,8 @@
 import java.util.*;
 
+//Julie Anne Moore
+//Colin Barber
+
 class Node {
 
 	protected ArrayList<Node> children;
@@ -82,6 +85,8 @@ class SelectPieceNode extends Node {
 	public SelectPieceNode(QuartoBoard board) {
 		super(board);
 		ArrayList<Integer> moves = MonteCarlo.getPossiblePieces(board);
+		// From playing against profs hard agent we noticed it's first piece was always 00000
+		// Ours seems to be random, so we hardcode this little "hack"
 		if (moves.size() == 32) {
 			this.remainingMoves.add("00000");
 			return;

@@ -1,3 +1,6 @@
+// Julie Anne Moore
+// Colin Barber
+
 public class QuartoCarloAgent extends QuartoAgent {
 
     //Example AI

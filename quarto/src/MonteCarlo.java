@@ -1,5 +1,8 @@
 import java.util.ArrayList;
 
+// Julie Anne Moore
+// Colin Barber
+
 // UCT algorithm from http://mcts.ai/pubs/mcts-survey-master.pdf
 public class MonteCarlo {
 
