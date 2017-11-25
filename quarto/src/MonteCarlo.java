@@ -120,6 +120,7 @@ public class MonteCarlo {
 			} else {
 				child = new SelectMoveNode(node.getBoard());
 			}
+			((SelectPieceNode)node).addChild(child, action);
 		} else {
 			QuartoBoard copyBoard = new QuartoBoard(node.getBoard());
 			int piece = parsePiece(node.getAction());
@@ -128,15 +129,16 @@ public class MonteCarlo {
 			
 			if (isWin(copyBoard, move[0], move[1])) {
 				if (node.player)
+					child = new TerminatingNode(copyBoard, 1);
+				else 
 					child = new TerminatingNode(copyBoard, -1);
-				child = new TerminatingNode(copyBoard, 1);
 			} else if (copyBoard.checkIfBoardIsFull()) {
 				child = new TerminatingNode(copyBoard, 0);
 			} else {
 				child = new SelectPieceNode(copyBoard);
 			}
-		}
-		node.addChild(child, action);
+			((SelectMoveNode)node).addChild(child, action);
+		}	
 		return child;
 	}
 	
@@ -220,10 +222,12 @@ public class MonteCarlo {
 	private void backup(Node node, int score) {
 		while (node != null) {
 			node.setN(node.getN()+1);
-			if (node.player){
-				node.setQ(node.getQ()+score);
-			} else {
-				node.setQ(node.getQ()-score);
+			if (node.getParentNode() != null) {
+				if (node.getParentNode().player){
+					node.setQ(node.getQ()+score);
+				} else {
+					node.setQ(node.getQ()-score);
+				}
 			}
 			node = node.getParentNode();
 		}
