@@ -1,16 +1,16 @@
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
-/*
- * The UCT algorithm from http://mcts.ai/pubs/mcts-survey-master.pdf
- */
-		
+// Julie Anne Moore
+// Colin Barber
+
+// UCT algorithm from http://mcts.ai/pubs/mcts-survey-master.pdf
 public class MonteCarlo {
 
+	// Computational limit
 	private int timeLimit;
+	// Exploration constant
 	private double cp;
+	// True if agent uses board symmetry for action selection, false otherwise
 	private boolean symmetry;
 
 	public MonteCarlo(int timeLimit, double cp, boolean symmetry) {
@@ -29,47 +29,39 @@ public class MonteCarlo {
 	 * 		return action(BestChild(v0,0))
 	 */
 	public String UCTSearch(QuartoBoard board, Integer piece) {
-		// create root node v0 with state s0
+		Node root = createRoot(board, piece);
+
+		long startTime = System.currentTimeMillis();
+		long endTime = startTime + (this.timeLimit);
+		while (System.currentTimeMillis() < endTime) {
+			Node child = treePolicy(root);	
+			int score = defaultPolicy(child, board, child.player);
+			backup(child, score);
+		}
+
+		printTree(root);
+		
+		return bestChild(root, 0).getAction();
+	}
+	
+	/*
+	 * Create a root node based on the the board state and current piece
+	 */
+	public Node createRoot(QuartoBoard board, Integer piece) {
 		Node root;
 		if (piece == null) {
 			root = new SelectPieceNode(board);
 		} else {
 			if (symmetry) {
+				// uses symmetry to set the remaining moves (hopefully reduces the tree size)
 				root = new SelectMoveNode(board, piece);
 			} else {
 				root = new SelectMoveNode(board);
 			}
 			((SelectMoveNode) root).setAction(piece);
 		}
-
-		long startTime = System.currentTimeMillis();
-		long endTime = startTime + (this.timeLimit);
-		while (System.currentTimeMillis() < endTime) {
-			// v1 <= TreePolicy(v0)
-			Node child = treePolicy(root);
-			
-			// delta <= DefaultPolicy(s(v1))
-			int score;
-			if (child instanceof SelectMoveNode) {
-				piece = parsePiece(child.getAction());
-				score = defaultPolicy(board, piece, child.player);
-			} else if (child instanceof SelectPieceNode){
-				int[] move = parseMove(child.getAction());
-				QuartoBoard copyBoard = new QuartoBoard(board);
-				copyBoard.insertPieceOnBoard(move[0], move[1], piece);
-				score = defaultPolicy(copyBoard, null, child.player);
-			} else {
-				score = ((TerminatingNode) child).getValue();
-			}
-			
-			//Backup(v1, delta)
-			backup(child, score);
-		}
-
-		// return action(BestChild(v0,0))
-		 printTree("Root", root);
 		
-		return bestChild(root, 0).getAction();
+		return root;
 	}
 	
 	/*
@@ -85,15 +77,23 @@ public class MonteCarlo {
 	 *  	adjusted to lower or increase the amount of 
 	 *  	exploration performed
 	 *  
-	 *  Cp =  1 / Math.sqrt(2) is mentioned in the paper
+	 *  Cp =  1 / Math.sqrt(2) is mentioned in the paper 
+	 *  
+	 *  If we had more time it would be interesting to have 
+	 *  tried to tune this parameter.
 	 *  
 	 */
 	private Node treePolicy(Node node) {
-		if (node instanceof TerminatingNode)
-			return node;
-		if (node.getRemainingMoves().size() != 0)
-			return expand(node);
-		return bestChild(node, this.cp);
+		while (!(node instanceof TerminatingNode)) {
+			if (node.getRemainingMoves().size() != 0){
+				return expand(node);
+			}
+			else {
+				node = bestChild(node, this.cp);
+			}
+		}
+		
+		return node;
 	}
 
 	/*
@@ -115,6 +115,7 @@ public class MonteCarlo {
 			} else {
 				child = new SelectMoveNode(node.getBoard());
 			}
+			((SelectPieceNode)node).addChild(child, action);
 		} else {
 			QuartoBoard copyBoard = new QuartoBoard(node.getBoard());
 			int piece = parsePiece(node.getAction());
@@ -123,15 +124,16 @@ public class MonteCarlo {
 			
 			if (isWin(copyBoard, move[0], move[1])) {
 				if (node.player)
+					child = new TerminatingNode(copyBoard, 1);
+				else 
 					child = new TerminatingNode(copyBoard, -1);
-				child = new TerminatingNode(copyBoard, 1);
 			} else if (copyBoard.checkIfBoardIsFull()) {
 				child = new TerminatingNode(copyBoard, 0);
 			} else {
 				child = new SelectPieceNode(copyBoard);
 			}
-		}
-		node.addChild(child, action);
+			((SelectMoveNode)node).addChild(child, action);
+		}	
 		return child;
 	}
 	
@@ -142,7 +144,7 @@ public class MonteCarlo {
 	private Node bestChild(Node node, double delta) {
 		return argmax(node, delta);
 	}
-		
+	
 	private Node argmax(Node node, double delta) {
 		ArrayList<Node> children = node.getChildren();
 		
@@ -162,35 +164,40 @@ public class MonteCarlo {
 		return maxNode;
 	}
 	
-	private void printTree(String name, Node node) {
-		System.out.println(name+ ": Q=>"+node.getQ()+", N=>"+node.getN());
+	// Utility function for printing expected values and number of simulations at the top level
+	private void printTree(Node node) {
+		System.out.println("Root: Q=>"+node.getQ()+", N=>"+node.getN());
 		ArrayList<Node> children = node.getChildren();
-		for (int i = 0; i < children.size() ; i++) {
-			printTree("\t"+children.get(i).getAction(), children.get(i));
+
+		for (Node child : children) {
+			System.out.println("\t"+child.getAction() + ": Q=>"+child.getQ()+", N=>"+child.getN());
 		}
-		if ("Root" == name) {
-			System.out.println("Best Action: " + bestChild(node, 0).getAction());
-		}
+		
+		System.out.println("Best Action: " + bestChild(node, 0).getAction());
 	}
 	
-	/*
-	 * BestChild equation from paper
-	 */
+	// BestChild equation from paper
 	private double evaluate(Node node, int simulations, double delta) {
 		return (double)node.getQ() / node.getN() + delta*Math.sqrt(2*Math.log(simulations) / node.getN());
 	}
 
-	/*
-	 *  return score from randomly simulated game
-	 */
-	private int defaultPolicy(QuartoBoard board, Integer piece, Boolean player1) {
+	// Return score from simulated game
+	private int defaultPolicy(Node child, QuartoBoard board, Boolean player1) {
 		QuartoBoard copyBoard = new QuartoBoard(board);
 		int score;
-		if (piece == null) {
+		int piece;
+		
+		if (child instanceof SelectMoveNode) {
+			piece = parsePiece(child.getAction());
+			score = playGame(copyBoard, piece, player1);
+		} else if (child instanceof SelectPieceNode){
+			int[] move = parseMove(child.getAction());
+			piece = parsePiece(child.getParentNode().getAction());
+			copyBoard.insertPieceOnBoard(move[0], move[1], piece);
 			piece = randomPieceSelection(copyBoard);
-			score = playGame(copyBoard, piece, false);
+			score = playGame(copyBoard, piece, !player1); 
 		} else {
-			score = playGame(copyBoard, piece, true);
+			score = ((TerminatingNode) child).getValue();
 		}
 		return score;
 	}
@@ -206,10 +213,12 @@ public class MonteCarlo {
 	private void backup(Node node, int score) {
 		while (node != null) {
 			node.setN(node.getN()+1);
-			if (node.player){
-				node.setQ(node.getQ()+score);
-			} else {
-				node.setQ(node.getQ()-score);
+			if (node.getParentNode() != null) {
+				if (node.getParentNode().player){
+					node.setQ(node.getQ()+score);
+				} else {
+					node.setQ(node.getQ()-score);
+				}
 			}
 			node = node.getParentNode();
 		}
@@ -227,18 +236,20 @@ public class MonteCarlo {
 		return move;
 	}
 
-	private int playGame(QuartoBoard board, int startingPiece, Boolean player1) {
+	// Runs a simulated quarto game starting with making a move given a piece
+	public int playGame(QuartoBoard board, int startingPiece, Boolean ourPlayer) {
 
 		int piece = startingPiece;
 
 		while (true) {
 
+			// Was previously semiRandomMove
 			int[] move = randomMove(piece, board);
 
 			board.insertPieceOnBoard(move[0], move[1], piece);
 
 			if (isWin(board, move[0], move[1])) {
-				if (player1)
+				if (ourPlayer)
 					return 1;
 				return -1;
 			}
@@ -246,13 +257,15 @@ public class MonteCarlo {
 			if (board.checkIfBoardIsFull())
 				return 0;
 
+			// Was previously semiRandomPieceSelection
 			piece = randomPieceSelection(board);
 
 			// Switch payers
-			player1 = !player1;
+			ourPlayer = !ourPlayer;
 		}
 	}
 
+	// Determines if board is in winning state given move made on position row,col
 	protected Boolean isWin(QuartoBoard board, int row, int col) {
 		if (board.checkRow(row) || board.checkColumn(col)
 				|| board.checkDiagonals()) {
@@ -261,11 +274,16 @@ public class MonteCarlo {
 		return false;
 	}
 
+	// Used for piece selection during simulations
 	protected int randomPieceSelection(QuartoBoard board) {
 		QuartoBoard copyBoard = new QuartoBoard(board);
 		return copyBoard.chooseRandomPieceNotPlayed(100);
 	}
 
+	/* Dead code
+	 * We were using this for piece selection during simulations,
+	 * but we are now using random piece due to the performance hit.
+	 */
 	protected int semiRandomPieceSelection(QuartoBoard board) {
 		boolean skip = false;
 		for (int i = 0; i < board.getNumberOfPieces(); i++) {
@@ -298,6 +316,7 @@ public class MonteCarlo {
 		return copyBoard.chooseRandomPieceNotPlayed(100);
 	}
 
+	// Used for move selection during simulations
 	protected int[] randomMove(int pieceID, QuartoBoard board) {
 		int[] move = new int[2];
 		QuartoBoard copyBoard = new QuartoBoard(board);
@@ -306,6 +325,10 @@ public class MonteCarlo {
 		return move;
 	}
 
+	/* Dead code
+	 * We were using this for move selection during simulations,
+	 * but we are now using random moves due to the performance hit.
+	 */
 	protected int[] semiRandomMove(int pieceID, QuartoBoard board) {
 		int[] move = new int[2];
 		for (int row = 0; row < board.getNumberOfRows(); row++) {
@@ -329,6 +352,11 @@ public class MonteCarlo {
 		return copyBoard.chooseRandomPositionNotPlayed(100);
 	}
 
+	
+	/** Create a list of pieces not on the board, and therefore possible to play
+	 * @param board the current turn's board
+	 * @return the list of possible pieces that can be played
+	 */
 	public static ArrayList<Integer> getPossiblePieces(QuartoBoard board) {
 		ArrayList<Integer> pieces = new ArrayList<Integer>();
 		for (int i = 0; i < board.getNumberOfPieces(); i++) {
@@ -340,6 +368,10 @@ public class MonteCarlo {
 		return pieces;
 	}
 	
+	/** This version of getPossibleMoves simply determines where there are free spaces on the board
+	 * @param board the current turn's board
+	 * @return the list of possible moves
+	 */
 	public static ArrayList<int[]> getPossibleMoves(QuartoBoard board) {
 		ArrayList<int[]> movesList = new ArrayList<int[]>();
 
@@ -355,8 +387,16 @@ public class MonteCarlo {
 		return movesList;
 	}
 	
+	/** This version of getPossibleMoves takes into considering board symmetry upon playing a piece
+	 * @param board the current turn's board
+	 * @param piece the piece id provided to our agent
+	 * @return the list of possible moves
+	 */
 	public static ArrayList<int[]> getPossibleMoves(QuartoBoard board, Integer piece) {
+		// keep track of unique moves with movesList
 		ArrayList<int[]> movesList = new ArrayList<int[]>();
+		// boardSet is used to keep track of any symmetric boards generated by placing the piece of the board
+		// in all available spots
 		ArrayList<QuartoBoard> boardSet = new ArrayList<QuartoBoard>();
 		
 		for (int row = 0; row < board.getNumberOfRows(); row++) {
@@ -365,7 +405,8 @@ public class MonteCarlo {
 					QuartoBoard copyBoard = new QuartoBoard(board);
 					copyBoard.insertPieceOnBoard(row, col, piece);
 					
-					// If the board generated by making that move exists in the board set, then don't add the move to the move list
+					// If the board generated by making that move exists in the board set, then there exists
+					// a previously made move that, with symmetry, results in that board state
 					boolean contains = false;
 					for (QuartoBoard boardSetBoard : boardSet) {
 						if (areEqualBoards(boardSetBoard, copyBoard)) {
@@ -374,6 +415,9 @@ public class MonteCarlo {
 						}
 					}
 					
+					// If that move results in a board state that is unique, or not part of the board set,
+					// then add that move to the list of possible moves, and add all the symmetric boards generated by making
+					// that move into the board set
 					if (!contains) {
 						int[] moves = {row, col};
 						movesList.add(moves);
@@ -387,6 +431,8 @@ public class MonteCarlo {
 		return movesList;
 	}
 	
+	// Compare quarto boards for equality
+	// Used in getPossibleMoves for an agent that takes advantage of board symmetry
 	public static boolean areEqualBoards(QuartoBoard b1, QuartoBoard b2) {
 		for (int i = 0; i < b1.getNumberOfRows(); i++) {
 			for (int j = 0; j < b1.getNumberOfColumns(); j++) {
@@ -399,6 +445,8 @@ public class MonteCarlo {
 		return true;
 	}
 	
+
+	// Compares quarto pieces for equality
 	public static boolean areEqualPieces(QuartoPiece p1, QuartoPiece p2) {
 		if (p1 == null && p2 == null) {
 			return true;
@@ -409,6 +457,10 @@ public class MonteCarlo {
 		}
 	}
 	
+	/** Combines lists of symmetric boards generated by rotation and mirroring a board
+	 * @param board the initial board
+	 * @return the list of symmetric boards generated by rotation and mirroring
+	 */
 	public static ArrayList<QuartoBoard> findSymmetricBoards(QuartoBoard board) {
 		ArrayList<QuartoBoard> symBoards = new ArrayList<QuartoBoard>();
 		symBoards.add(board);
@@ -418,6 +470,11 @@ public class MonteCarlo {
 		return symBoards;
 	}
 	
+	
+	/** Rotates a board clockwise
+	 * @param board the initial board
+	 * @return a clockwise rotated copy of the param board
+	 */
 	public static QuartoBoard rotateBoard(QuartoBoard board) {
 		QuartoBoard copyBoard = new QuartoBoard(board);
 		
@@ -430,6 +487,11 @@ public class MonteCarlo {
 		return copyBoard;
 	}
 	
+	
+	/** Creates a list of symmetric boards generated by rotation
+	 * @param board the initial board
+	 * @return the list of symmetric boards created by rotating the param board
+	 */
 	public static ArrayList<QuartoBoard> getRotatedBoards(QuartoBoard board) {
 		ArrayList<QuartoBoard> rotatedBoards = new ArrayList<QuartoBoard>();
 		QuartoBoard b1 = rotateBoard(board);
@@ -441,6 +503,10 @@ public class MonteCarlo {
 		return rotatedBoards;
 	}
 	
+	/** Transposing a board generates a mirror of the board 
+	 * @param board the initial board
+	 * @return a transposed copy of the param board
+	 */
 	public static QuartoBoard transposeBoard(QuartoBoard board) {
 		QuartoBoard copyBoard = new QuartoBoard(board);
 		
@@ -453,9 +519,14 @@ public class MonteCarlo {
 		return copyBoard;
 	}
 	
+	/** Creates a list of symmetric boards generated by mirroring
+	 * @param board the initial board
+	 * @return the list of symmetric boards created by mirroring the param board
+	 */
 	public static ArrayList<QuartoBoard> getMirroredBoards(QuartoBoard board) {
 		ArrayList<QuartoBoard> mirroredBoards = new ArrayList<QuartoBoard>();
 	
+		// Generate mirror boards by mirroring across center "y axis" and "x axis"
 		QuartoBoard yMirror = new QuartoBoard(board);
 		QuartoBoard xMirror = new QuartoBoard(board);
 		for (int i = 0; i < board.getNumberOfRows(); i++) {
@@ -467,8 +538,12 @@ public class MonteCarlo {
 		    }
 		}
 		
+		// Transposing the board generates a mirror of the board across the imaginary axis from the
+		// top left element ([0][0]) to the bottom right element ([4][4])
 		QuartoBoard transpose = transposeBoard(board);
 		
+		// Generating the mirror of the board across the top right element ([0][4]) to the bottom left element ([4][0])
+		// is equivalent to rotating the board twice, then transposing that board
 		QuartoBoard diag = rotateBoard(board);
 		diag = rotateBoard(diag);
 		diag = transposeBoard(diag);
@@ -482,44 +557,13 @@ public class MonteCarlo {
 	}
 	
 	public static void main(String[] args) {
-		 QuartoBoard board = new QuartoBoard(5,5,32, null);
-		 board.board[0][0] = new QuartoPiece(1);
-		 board.board[0][1] = new QuartoPiece(2);
-		 board.board[0][2] = new QuartoPiece(25);
-		 board.board[0][3] = new QuartoPiece(4);
-		 board.board[0][4] = new QuartoPiece(5);
-		 board.board[1][0] = new QuartoPiece(6);
-		 board.board[1][1] = new QuartoPiece(7);
-		 board.board[1][2] = new QuartoPiece(8);
-		 board.board[1][3] = new QuartoPiece(9);
-		 board.board[1][4] = new QuartoPiece(10);
-		 board.board[2][0] = new QuartoPiece(11);
-		 board.board[2][1] = new QuartoPiece(12);
-		 board.board[2][2] = new QuartoPiece(13);
-		 board.board[2][3] = new QuartoPiece(14);
-		 board.board[2][4] = new QuartoPiece(15);
-
-//		 board.board[0][4] = new QuartoPiece(4);
-//		 board.board[0][2] = new QuartoPiece(2);
-//		 board.board[0][3] = new QuartoPiece(3);
-//		 
-//		 board.printBoardState();
-//		 ArrayList<QuartoBoard> set = getMirroredBoards(board);
-//		 for (QuartoBoard symboard : set) {
-//			 symboard.printBoardState();
-//		 }
-		 
-		 ArrayList<int[]> moves = getPossibleMoves(board, 3);
-		 
-		 for (int[] move : moves) {
-		 	String action = move[0] + "," + move[1];
-	 		System.out.println(action);
-		 }
-		 
-//		 MonteCarlo mc = new MonteCarlo(9000, 1 / Math.sqrt(2));
-//		
-//		 String bestAction = mc.UCTSearch(board, null);
-//		
-//		 System.out.println(bestAction); 
+//		QuartoBoard board = new QuartoBoard(5,5,32, "state.quarto");
+		QuartoBoard board = new QuartoBoard(5,5,32, null);
+		
+		board.printBoardState();
+		
+		MonteCarlo mc = new MonteCarlo(9000, 1 / Math.sqrt(2), false);
+		String bestAction = mc.UCTSearch(board, 0);
+		System.out.println(bestAction);
 	}
 }
